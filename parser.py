@@ -90,13 +90,12 @@ def _hlayout(spacing=0,
     return hlayout
 
 
-def _label(text,
-           widget=None,
+def _label(widget=None,
            layout=None,
            width="Ignored",
            height="Maximum",
            name=None):
-    label = QLabel(text)
+    label = QLabel()
     _set_widget(label,
                 layout=layout,
                 parent=widget,
@@ -215,10 +214,6 @@ def parse(source):
             if layouts:
                 kwargs["layout"] = layouts[-1]
 
-            # WIP
-            if tag == "label":
-                args += ("dummy text",)
-
             def nfw(w):
                 if isinstance(w, QObject):
                     return "<name=%s>" % w.objectName()
@@ -257,7 +252,9 @@ def parse(source):
     def char_data(data):
         tag = tags[-1] if tags else None
         if "label" in tag:
-            print(data.strip())
+            widget = widgets[-1] if widgets else None
+            if isinstance(widget, QLabel):
+                widget.setText(data.strip())
 
     p.StartElementHandler = start_element
     p.EndElementHandler = end_element
