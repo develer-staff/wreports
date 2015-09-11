@@ -124,21 +124,26 @@ def _hline(color="black",
                 name=name)
     return line
 
+
+class QImagePlaceholder(QFrame):
+    def __init__(self, src, *args, **kwargs):
+        super(QImagePlaceholder, self).__init__(*args, **kwargs)
+        self.src = src
+
 def _image(src,
            widget=None,
            layout=None,
            width="Preferred",
            height="MinimumExpanding",
            name=None):
-    image = QWidget()
+    image = QImagePlaceholder(src)
     _set_widget(image,
                 layout=layout,
                 parent=widget,
                 width=width,
                 height=height,
                 name=name)
-    image.setStyleSheet("QWidget { background: yellow }")
-    image.src = src
+    image.setStyleSheet("QImagePlaceholder { background: yellow }")
     return image
 
 # Attributes parsers

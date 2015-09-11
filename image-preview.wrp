@@ -9,7 +9,9 @@
       </hlayout>
       <image src="some.svg" width="Expanding" height="Expanding" name="small_preview" />
       <hline color="black" />
-      <label width="Ignored" name="footer">Footer</label>
+      <hlayout name="footer_layout" margins="(5,5,5,5)">
+        <label width="Ignored" name="footer">Footer</label>
+      </hlayout>
     </vlayout>
   </page>
 </report>
