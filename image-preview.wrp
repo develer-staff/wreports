@@ -1,15 +1,15 @@
 <?xml version = "1.0"?>
 
 <report>
-  <page>
+  <page name="page1">
     <vlayout name="page_layout">
       <hlayout name="header_layout">
-        <text width="Ignore" name="col1">Some text</text>
-        <text width="Ignore" name="col2">Other text</text>
+        <label width="Ignored" name="col1">Some text</label>
+        <label width="Ignored" name="col2">Other text</label>
       </hlayout>
       <image src="some.svg" width="Expanding" height="Expanding" name="small_preview" />
-      <hline color="black" />
-      <text width="Ignore" name="footer">Footer</text>
+      <!--hline color="black" /-->
+      <label width="Ignored" name="footer">Footer</label>
     </vlayout>
   </page>
 </report>
