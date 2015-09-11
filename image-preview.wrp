@@ -1,13 +1,15 @@
 <?xml version = "1.0"?>
 
-<page>
-  <vlayout name="page_layout">
-    <hlayout name="header_layout">
-      <text width="ignore" name="col1">Some text</text>
-      <text width="ignore" name="col2">Other text</text>
-    </hlayout>
-    <image src="some.svg" width="expanding" height="expanding" name="small_preview" />
-    <hline color="black" />
-    <text width="ignore" name="footer">Footer</text>
-  </vlayout>
-</page>
+<report>
+  <page>
+    <vlayout name="page_layout">
+      <hlayout name="header_layout">
+        <text width="Ignore" name="col1">Some text</text>
+        <text width="Ignore" name="col2">Other text</text>
+      </hlayout>
+      <image src="some.svg" width="Expanding" height="Expanding" name="small_preview" />
+      <hline color="black" />
+      <text width="Ignore" name="footer">Footer</text>
+    </vlayout>
+  </page>
+</report>
