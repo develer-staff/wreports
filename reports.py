@@ -15,6 +15,11 @@ def main(args):
     app = QApplication(args)
     rp = ReportPreview()
     rp.show()
+    def is_widget(w):
+        return "widget" in w.objectName()
+    widgets = [w for w in rp.findChildren(QWidget) if is_widget(w)]
+    for i, w in enumerate(widgets):
+        print("%d: %s" % (i, w.frameGeometry()))
     return app.exec_()
 
 
