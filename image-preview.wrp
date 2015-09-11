@@ -3,7 +3,7 @@
 <report>
   <page name="page1">
     <vlayout name="page_layout">
-      <hlayout name="header_layout">
+      <hlayout name="header_layout" margins="(5,5,5,5)">
         <label width="Ignored" name="col1">Some text</label>
         <label width="Ignored" name="col2">Other text</label>
       </hlayout>

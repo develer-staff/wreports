@@ -123,6 +123,18 @@ def _image(src,
     image.src = src
     return image
 
+def _parse_spacing(value):
+    try:
+        return float(value)
+    except:
+        raise ValueError("Invalid value %r for `spacing`, provide a valid number" % value)
+
+def _parse_margins(value):
+    try:
+        return tuple(float(v.strip()) for v in value.strip("()").split(","))
+    except:
+        raise ValueError("Invalid value %r for `margins`, provide 4 comma separated numbers, es. (3,3,4,4)" % value)
+
 
 def parse(source):
     p = xml.parsers.expat.ParserCreate()
@@ -136,13 +148,25 @@ def parse(source):
     layouts = []
     pages = []
 
+    parsers = {}
+    for parser_name in globals():
+        if parser_name.startswith("_parse_"):
+            attr = parser_name[len("_parse_"):]
+            parsers[attr] = globals()[parser_name]
+
     def x(tag):
         hook = globals()["_"+tag]
         def f(*args, **kwargs):
+            # parse non string arguments
+            for attr in kwargs:
+                if attr in parsers:
+                    kwargs[attr] = parsers[attr](kwargs[attr])
+
             if widgets:
                 kwargs["widget"] = widgets[-1]
             if layouts:
                 kwargs["layout"] = layouts[-1]
+
             # WIP
             if tag == "label":
                 args += ("dummy text",)
