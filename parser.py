@@ -106,6 +106,24 @@ def _label(text,
     return label
 
 
+def _hline(color="black",
+           widget=None,
+           layout=None,
+           width="Minimum",
+           height="Fixed",
+           name=None):
+    line = QFrame()
+    line.setFrameShadow(QFrame.Plain)
+    line.setFrameShape(QFrame.HLine)
+    line.setLineWidth(1)
+    _set_widget(line,
+                layout=layout,
+                parent=widget,
+                width=width,
+                height=height,
+                name=name)
+    return line
+
 def _image(src,
            widget=None,
            layout=None,
@@ -123,6 +141,8 @@ def _image(src,
     image.src = src
     return image
 
+# Attributes parsers
+
 def _parse_spacing(value):
     try:
         return float(value)
@@ -134,6 +154,12 @@ def _parse_margins(value):
         return tuple(float(v.strip()) for v in value.strip("()").split(","))
     except:
         raise ValueError("Invalid value %r for `margins`, provide 4 comma separated numbers, es. (3,3,4,4)" % value)
+
+def _parse_color(value):
+    try:
+        return QColor(value)
+    except:
+        raise ValueError("Invalid color %r, provide a valid QColor" % value)
 
 
 def parse(source):

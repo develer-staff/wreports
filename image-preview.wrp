@@ -8,7 +8,7 @@
         <label width="Ignored" name="col2">Other text</label>
       </hlayout>
       <image src="some.svg" width="Expanding" height="Expanding" name="small_preview" />
-      <!--hline color="black" /-->
+      <hline color="black" />
       <label width="Ignored" name="footer">Footer</label>
     </vlayout>
   </page>
