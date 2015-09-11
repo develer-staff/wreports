@@ -109,18 +109,35 @@ def _label(text,
 def _hline(color="black",
            widget=None,
            layout=None,
-           width="Minimum",
-           height="Fixed",
+           width=1,
            name=None):
     line = QFrame()
     line.setFrameShadow(QFrame.Plain)
     line.setFrameShape(QFrame.HLine)
-    line.setLineWidth(1)
+    line.setLineWidth(width)
     _set_widget(line,
                 layout=layout,
                 parent=widget,
-                width=width,
-                height=height,
+                width="Minimum",
+                height="Fixed",
+                name=name)
+    return line
+
+
+def _vline(color="black",
+           widget=None,
+           layout=None,
+           width=1,
+           name=None):
+    line = QFrame()
+    line.setFrameShadow(QFrame.Plain)
+    line.setFrameShape(QFrame.VLine)
+    line.setLineWidth(width)
+    _set_widget(line,
+                layout=layout,
+                parent=widget,
+                width="Fixed",
+                height="Minimum",
                 name=name)
     return line
 
