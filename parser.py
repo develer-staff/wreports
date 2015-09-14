@@ -7,8 +7,6 @@ import types
 
 from PyQt4.Qt import *
 
-__all__ = [parse, SvgPlaceholder]
-
 # Helper functions to apply attributes to qwidgets
 
 def _set_object(obj, parent=None, name=None):
@@ -338,6 +336,10 @@ def parse(source):
 
     return pages
 
+__all__ = [parse, SvgPlaceholder]
+
+
+# Command line
 
 def main(args):
     app = QApplication(args)
@@ -358,7 +360,6 @@ def main(args):
     page.show()
 
     return app.exec_()
-
 
 
 if __name__ == '__main__':

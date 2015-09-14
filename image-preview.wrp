@@ -8,7 +8,7 @@
         <vline color="black" />
         <label width="Ignored" name="col2">Other text</label>
       </hlayout>
-      <svg src="some.svg" width="Expanding" height="Expanding" name="small_preview" />
+      <svg src="piece1.svg" width="Expanding" height="Expanding" name="small_preview" />
       <hline color="black" />
       <hlayout name="footer_layout" margins="(5,5,5,5)">
         <label width="Ignored" name="footer">Footer</label>
