@@ -184,8 +184,10 @@ def _vline(color="black",
 class AspectRatioSvgWidget(QSvgWidget):
     def paintEvent(self, paint_event):
         painter = QPainter(self)
-        default_width, default_height = self.renderer().defaultSize().width(), self.renderer().defaultSize().height()
-        widget_width, widget_height = self.size().width(), self.size().height()
+        view_box = self.renderer().viewBox()
+        default_width, default_height = view_box.width(), view_box.height()
+        widget_size = self.size()
+        widget_width, widget_height = widget_size.width(), widget_size.height()
         ratio_x = widget_width / default_width
         ratio_y = widget_height / default_height
         if ratio_x < ratio_y:
@@ -202,11 +204,11 @@ class AspectRatioSvgWidget(QSvgWidget):
         self.renderer().render(painter, new_rect)
 
 def _svg(src,
-           widget=None,
-           layout=None,
-           width="MinimumExpanding",
-           height="MinimumExpanding",
-           name=None):
+         widget=None,
+         layout=None,
+         width="Preferred",
+         height="MinimumExpanding",
+         name=None):
     """
     Svg tag, provide a pointer to a valid svg file
     """
