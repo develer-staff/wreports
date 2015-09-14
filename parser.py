@@ -58,7 +58,7 @@ def _report(*args, **kwargs):
 def _page(name=None, size=(600, 900)):
     page = QWidget()
     _set_object(page, name=name)
-    page.resize(600, 900)
+    page.resize(*size)
     return page
 
 def _vlayout(spacing=0,
@@ -175,6 +175,12 @@ def _parse_margins(value):
         return tuple(float(v.strip()) for v in value.strip("()").split(","))
     except:
         raise ValueError("Invalid value %r for `margins`, provide 4 comma separated numbers, es. (3,3,4,4)" % value)
+
+def _parse_size(value):
+    try:
+        return tuple(float(v.strip()) for v in value.strip("()").split(","))
+    except:
+        raise ValueError("Invalid value %r for `size`, provide 2 comma separated numbers, es. (300,400)" % value)
 
 def _parse_color(value):
     try:

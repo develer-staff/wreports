@@ -1,7 +1,7 @@
 <?xml version = "1.0"?>
 
 <report>
-  <page name="page1">
+  <page name="page1" size="800,800">
     <vlayout name="page_layout">
       <hlayout name="header_layout" margins="(5,5,5,5)" spacing="5">
         <label width="Ignored" name="col1">Some text</label>
