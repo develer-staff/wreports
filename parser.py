@@ -1,6 +1,5 @@
 #!/usr/bin/env python2
 # encoding: utf-8
-
 from __future__ import print_function, absolute_import, division
 
 import xml.parsers.expat
@@ -8,7 +7,9 @@ import types
 
 from PyQt4.Qt import *
 
+__all__ = [parse, SvgPlaceholder]
 
+# Helper functions to apply attributes to qwidgets
 
 def _set_object(obj, parent=None, name=None):
     if parent is not None:
@@ -52,20 +53,45 @@ def _set_widget(widget,
         widget.setSizePolicy(policy)
     _set_object(widget, **kwargs)
 
+# Tag function, called for each _<tag> found
+
 def _report(*args, **kwargs):
+    """
+    Document root, simply a container o pages
+    <report>
+      ...
+    </report>
+    """
     pass
 
+
 def _page(name=None, size=(600, 900)):
+    """
+    The page is the container of all the page contents
+    """
     page = QWidget()
     _set_object(page, name=name)
     page.resize(*size)
     return page
+
 
 def _vlayout(spacing=0,
              margins=(0,0,0,0),
              name=None,
              widget=None,
              layout=None):
+    """
+    Vertical layout, with some defaults better suited to printed output.
+    There are no tables (yet) in this markup, so nest more v|h layouts to build one.
+    <hlayout>
+      <vlayout>
+        ...
+      </vlayout>
+      <vlayout>
+        ...
+      </vlayout>
+    </hlayout>
+    """
     vlayout = QVBoxLayout()
     _set_layout(vlayout,
                 widget=widget,
@@ -75,11 +101,15 @@ def _vlayout(spacing=0,
                 parent_layout=layout)
     return vlayout
 
+
 def _hlayout(spacing=0,
              margins=(0,0,0,0),
              name=None,
              widget=None,
              layout=None):
+    """
+    Horizontal layout, see _vlayout for details
+    """
     hlayout = QHBoxLayout()
     _set_layout(hlayout,
                 widget=widget,
@@ -95,6 +125,9 @@ def _label(widget=None,
            width="Ignored",
            height="Maximum",
            name=None):
+    """
+    Text in the layout
+    """
     label = QLabel()
     _set_widget(label,
                 layout=layout,
@@ -110,6 +143,9 @@ def _hline(color="black",
            layout=None,
            width=1,
            name=None):
+    """
+    Horizontal line
+    """
     line = QFrame()
     line.setFrameShadow(QFrame.Plain)
     line.setFrameShape(QFrame.HLine)
@@ -128,6 +164,9 @@ def _vline(color="black",
            layout=None,
            width=1,
            name=None):
+    """
+    Vertical line
+    """
     line = QFrame()
     line.setFrameShadow(QFrame.Plain)
     line.setFrameShape(QFrame.VLine)
@@ -140,11 +179,34 @@ def _vline(color="black",
                 name=name)
     return line
 
+# Image rendering is done in two steps, the first run we detect the size of the
+# image in the document, in the second step we render the image correctly scaled
+# into the reserved place (vectorial svn render).
 
-class QImagePlaceholder(QFrame):
+class SvgPlaceholder(QFrame):
     def __init__(self, src, *args, **kwargs):
-        super(QImagePlaceholder, self).__init__(*args, **kwargs)
+        super(SvgPlaceholder, self).__init__(*args, **kwargs)
         self.src = src
+
+def _svg(src,
+           widget=None,
+           layout=None,
+           width="Preferred",
+           height="MinimumExpanding",
+           name=None):
+    """
+    Svg tag, provide a pointer to a valid svg file
+    """
+    svg = SvgPlaceholder(src)
+    _set_widget(svg,
+                layout=layout,
+                parent=widget,
+                width=width,
+                height=height,
+                name=name)
+    svg.setStyleSheet("SvgPlaceholder { background: yellow }")
+    return svg
+
 
 def _image(src,
            widget=None,
@@ -152,14 +214,18 @@ def _image(src,
            width="Preferred",
            height="MinimumExpanding",
            name=None):
-    image = QImagePlaceholder(src)
+    """
+    image tag, provide a pointer to a valid image file
+    """
+    pixmap = QPixmap(src)
+    image = QLabel()
+    image.setPixmap(pixmap)
     _set_widget(image,
                 layout=layout,
                 parent=widget,
                 width=width,
                 height=height,
                 name=name)
-    image.setStyleSheet("QImagePlaceholder { background: yellow }")
     return image
 
 # Attributes parsers
@@ -188,6 +254,8 @@ def _parse_color(value):
     except:
         raise ValueError("Invalid color %r, provide a valid QColor" % value)
 
+
+# Entrypoint
 
 def parse(source):
     p = xml.parsers.expat.ParserCreate()
@@ -281,7 +349,7 @@ def main(args):
         col1 = _label("Some text", widget=page, layout=header_layout)
         col2 = _label("Other text", widget=page, layout=header_layout)
         col3 = _label("Even other text", widget=page, layout=header_layout)
-        image = _image(src="some.svg", widget=page, layout=page_layout)
+        svg = _svg(src="some.svg", widget=page, layout=page_layout)
         footer = _label("Footer", widget=page, layout=page_layout)
     else:
         pages = parse(open("image-preview.wrp"))
