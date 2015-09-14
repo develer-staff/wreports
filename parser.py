@@ -63,13 +63,13 @@ def _report(*args, **kwargs):
     pass
 
 
-def _page(name=None, size=(600, 900)):
+def _page(name=None):
     """
     The page is the container of all the page contents
     """
     page = QWidget()
     _set_object(page, name=name)
-    page.resize(*size)
+    # page.resize(*size)
     return page
 
 
@@ -181,28 +181,43 @@ def _vline(color="black",
 # image in the document, in the second step we render the image correctly scaled
 # into the reserved place (vectorial svn render).
 
-class SvgPlaceholder(QFrame):
-    def __init__(self, src, *args, **kwargs):
-        super(SvgPlaceholder, self).__init__(*args, **kwargs)
-        self.src = src
+class AspectRatioSvgWidget(QSvgWidget):
+    def paintEvent(self, paint_event):
+        painter = QPainter(self)
+        default_width, default_height = self.renderer().defaultSize().width(), self.renderer().defaultSize().height()
+        widget_width, widget_height = self.size().width(), self.size().height()
+        ratio_x = widget_width / default_width
+        ratio_y = widget_height / default_height
+        if ratio_x < ratio_y:
+            new_width = widget_width
+            new_height = widget_width * default_height / default_width
+            new_left = 0
+            new_top = (widget_height - new_height) / 2
+        else:
+            new_width = widget_height * default_width / default_height
+            new_height = widget_height
+            new_left = (widget_width - new_width) / 2
+            new_top = 0
+        new_rect = QRectF(new_left, new_top, new_width, new_height)
+        self.renderer().render(painter, new_rect)
 
 def _svg(src,
            widget=None,
            layout=None,
-           width="Preferred",
+           width="MinimumExpanding",
            height="MinimumExpanding",
            name=None):
     """
     Svg tag, provide a pointer to a valid svg file
     """
-    svg = SvgPlaceholder(src)
+    svg = AspectRatioSvgWidget(src)
     _set_widget(svg,
                 layout=layout,
                 parent=widget,
                 width=width,
                 height=height,
                 name=name)
-    svg.setStyleSheet("SvgPlaceholder { background: yellow }")
+    # svg.setStyleSheet("SvgPlaceholder { background: yellow }")
     return svg
 
 
@@ -293,7 +308,7 @@ def parse(source):
                     return w
             named_args = tuple(nfw(a) for a in args)
             named_kwargs = {k: nfw(kwargs[k]) for k in kwargs}
-            print("%s %s %s)" % ("  "*len(tags), named_args, named_kwargs))
+            # print("%s %s %s)" % ("  "*len(tags), named_args, named_kwargs))
 
             # print("_%s(*%r, **%r)" % (tag, args, kwargs))
             obj = hook(*args, **kwargs)
@@ -309,7 +324,7 @@ def parse(source):
 
     def start_element(tag, attrs):
         tags.append(tag)
-        print("%s<%s>" % ("  "*len(tags), tag))
+        # print("%s<%s>" % ("  "*len(tags), tag))
         obj = x(tag)(**attrs)
     def end_element(tag):
         if "report" in tag:
@@ -318,7 +333,7 @@ def parse(source):
             layouts.pop()
         else:
             widgets.pop()
-        print("%s</%s>" % ("  "*len(tags), tag))
+        # print("%s</%s>" % ("  "*len(tags), tag))
         popped_name = tags.pop()
         assert popped_name == tag, (popped_name, tag)
     def char_data(data):
@@ -336,7 +351,7 @@ def parse(source):
 
     return pages
 
-__all__ = [parse, SvgPlaceholder]
+__all__ = [parse]
 
 
 # Command line
