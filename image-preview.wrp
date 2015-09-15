@@ -2,7 +2,97 @@
 
 <report>
   <page name="page1">
-    <vlayout name="page_layout" margins="(15,15,15,15)">
+    <vlayout name="page_layout">
+      <hlayout name="row_layout">
+        <vlayout name="image_layout">
+          <hlayout name="header_layout" margins="(5,5,5,5)" spacing="5">
+            <label width="Ignored" name="col1">Some text</label>
+            <vline color="black" />
+            <label width="Ignored" name="col2">Other text</label>
+          </hlayout>
+          <svg src="piece1.svg" name="small_preview" />
+          <hline color="black" />
+          <hlayout name="footer_layout" margins="(5,5,5,5)">
+            <label width="Ignored" name="footer">Footer</label>
+          </hlayout>
+          <hline color="black" />
+        </vlayout>
+        <vline/>
+        <vlayout name="image_layout">
+          <hlayout name="header_layout" margins="(5,5,5,5)" spacing="5">
+            <label width="Ignored" name="col1">Some text</label>
+            <vline color="black" />
+            <label width="Ignored" name="col2">Other text</label>
+          </hlayout>
+          <svg src="piece2.svg" name="small_preview" />
+          <hline color="black" />
+          <hlayout name="footer_layout" margins="(5,5,5,5)">
+            <label width="Ignored" name="footer">Footer</label>
+          </hlayout>
+          <hline color="black" />
+        </vlayout>
+        <vline/>
+        <vlayout name="image_layout">
+          <hlayout name="header_layout" margins="(5,5,5,5)" spacing="5">
+            <label width="Ignored" name="col1">Some text</label>
+            <vline color="black" />
+            <label width="Ignored" name="col2">Other text</label>
+          </hlayout>
+          <svg src="piece3.svg" name="small_preview" />
+          <hline color="black" />
+          <hlayout name="footer_layout" margins="(5,5,5,5)">
+            <label width="Ignored" name="footer">Footer</label>
+          </hlayout>
+          <hline color="black" />
+        </vlayout>
+      </hlayout>
+      <hlayout name="row_layout">
+        <vlayout name="image_layout">
+          <hlayout name="header_layout" margins="(5,5,5,5)" spacing="5">
+            <label width="Ignored" name="col1">Some text</label>
+            <vline color="black" />
+            <label width="Ignored" name="col2">Other text</label>
+          </hlayout>
+          <svg src="piece1.svg" name="small_preview" />
+          <hline color="black" />
+          <hlayout name="footer_layout" margins="(5,5,5,5)">
+            <label width="Ignored" name="footer">Footer</label>
+          </hlayout>
+          <hline color="black" />
+        </vlayout>
+        <vline/>
+        <vlayout name="image_layout">
+          <hlayout name="header_layout" margins="(5,5,5,5)" spacing="5">
+            <label width="Ignored" name="col1">Some text</label>
+            <vline color="black" />
+            <label width="Ignored" name="col2">Other text</label>
+          </hlayout>
+          <svg src="piece2.svg" name="small_preview" />
+          <hline color="black" />
+          <hlayout name="footer_layout" margins="(5,5,5,5)">
+            <label width="Ignored" name="footer">Footer</label>
+          </hlayout>
+          <hline color="black" />
+        </vlayout>
+        <vline/>
+        <vlayout name="image_layout">
+          <hlayout name="header_layout" margins="(5,5,5,5)" spacing="5">
+            <label width="Ignored" name="col1">Some text</label>
+            <vline color="black" />
+            <label width="Ignored" name="col2">Other text</label>
+          </hlayout>
+          <svg src="piece3.svg" name="small_preview" />
+          <hline color="black" />
+          <hlayout name="footer_layout" margins="(5,5,5,5)">
+            <label width="Ignored" name="footer">Footer</label>
+          </hlayout>
+          <hline color="black" />
+        </vlayout>
+      </hlayout>
+    </vlayout>
+  </page>
+  <page name="page1">
+    <vlayout name="page_layout">
       <hlayout name="row_layout">
         <vlayout name="image_layout">
           <hlayout name="header_layout" margins="(5,5,5,5)" spacing="5">

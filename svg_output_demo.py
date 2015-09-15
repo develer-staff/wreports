@@ -13,27 +13,33 @@ import parser
 def main():
     app = QApplication(sys.argv)
 
-
     def paint_svg(printer, painter, page):
-        page_rect = printer.pageRect(QPrinter.Point)
-        print("  Rendering page size = %s, resolution = %s" % (page_rect.size(), printer.resolution()))
-        page.resize(page_rect.width()/0.6, page_rect.height()/0.6)
-        print("  physicalDpi = %s %s" % (printer.physicalDpiX(), printer.physicalDpiY()))
+        page_rect = printer.pageRect(QPrinter.DevicePixel)
         # make qwidget output vectorial, rendering directly on a painter
         # results in a raster image in the pdf
         page_pic = QPicture()
         wpainter = QPainter(page_pic)
+        pdevice = painter.device()
+        wdevice = wpainter.device()
+        ratioX = pdevice.physicalDpiX() / wdevice.physicalDpiX()
+        ratioY = pdevice.physicalDpiY() / wdevice.physicalDpiY()
+        page.resize(page_rect.width()/ratioX, page_rect.height()/ratioY)
         page.render(wpainter, flags=QWidget.DrawChildren)
         wpainter.end()
         painter.drawPicture(0, 0, page_pic)
 
-    def go():
-        print("Setup pdf flags...")
+    def go(w):
+        print("Setup printer...")
         printer = QPrinter(QPrinter.HighResolution)
-        printer.setOutputFormat(QPrinter.PdfFormat)
-        printer.setOutputFileName("report.pdf")
-        printer.setColorMode(QPrinter.Color)
-        printer.setFullPage(True)
+        #printer.setOutputFormat(QPrinter.PdfFormat)
+        #printer.setOutputFileName("report.pdf")
+        #printer.setColorMode(QPrinter.Color)
+        #printer.setPaperSize(QPrinter.A4)
+        #printer.setOrientation(QPrinter.Landscape)
+
+        pd = QPrintDialog(printer, w)
+        if pd.exec_() != QDialog.Accepted:
+            return
 
         print("Parsing template")
         pages = parser.parse(open("image-preview.wrp"))
@@ -49,12 +55,12 @@ def main():
         painter.end()
 
         print("done!")
-        app.quit()
 
-    timer = QTimer()
-    timer.singleShot(100, go)
-    timer.start()
-
+    print("Show print dialog...")
+    w = QPushButton("Click to close")
+    w.connect(w, SIGNAL("clicked(bool)"), w.close)
+    w.show()
+    go(w)
     sys.exit(app.exec_())
 
 
