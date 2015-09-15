@@ -1,8 +1,7 @@
-#!/usr/bin/env python
+#!/usr/bin/env python2
 # encoding: utf-8
 from __future__ import division, print_function, absolute_import
 
-import sys
 
 from PyQt4.Qt import *
 
@@ -51,11 +50,13 @@ def paint_pages(printer, pages):
 
 # demo code
 
-def main():
+def demo(template):
     import parser
-    app = QApplication(sys.argv)
+    app = QApplication([])
 
-    def go(w):
+    def open_dialog(w):
+        import os
+        from os.path import dirname, basename
         print("Setup printer...")
         printer = QPrinter(QPrinter.HighResolution)
         #printer.setOutputFormat(QPrinter.PdfFormat)
@@ -69,7 +70,9 @@ def main():
             return
 
         print("Parsing template")
-        pages = parser.parse(open("image-preview.wrp"))
+        template_dir = dirname(template)
+        os.chdir(template_dir)
+        pages = parser.parse(open(basename(template)))
         paint_pages(printer, pages)
 
         print("done!")
@@ -78,10 +81,16 @@ def main():
     w = QPushButton("Click to close")
     w.connect(w, SIGNAL("clicked(bool)"), w.close)
     w.show()
-    go(w)
+    open_dialog(w)
     sys.exit(app.exec_())
 
 
 if __name__ == '__main__':
-    main()
-
+    import os
+    import sys
+    if sys.argv[1:] and os.path.exists(sys.argv[1]):
+        template = sys.argv[1]
+        print("Parsing template %s" % template)
+        demo(template)
+    else:
+        print("Provide a wreport template")

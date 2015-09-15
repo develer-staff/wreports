@@ -279,6 +279,12 @@ def _parse_size(value):
     except:
         raise ValueError("Invalid value %r for `size`, provide 2 comma separated numbers, es. (300,400)" % value)
 
+def _parse_line_width(value):
+    try:
+        return float(value.strip())
+    except:
+        raise ValueError("Invalid value %r for `line_width`, provide a valid numbers" % value)
+
 def _parse_color(value):
     try:
         return QColor(value)
@@ -375,21 +381,16 @@ def parse(source):
 
 # Command line
 
-def main(args):
-    app = QApplication(args)
+def demo(template):
+    import os
+    from os.path import dirname, basename
 
-    if "code" in args:
-        page = _page()
-        page_layout = _vlayout(name="page_layout", widget=page)
-        header_layout = _hlayout(name="header_layout", widget=page, layout=page_layout)
-        col1 = _label("Some text", widget=page, layout=header_layout)
-        col2 = _label("Other text", widget=page, layout=header_layout)
-        col3 = _label("Even other text", widget=page, layout=header_layout)
-        svg = _svg(src="some.svg", widget=page, layout=page_layout)
-        footer = _label("Footer", widget=page, layout=page_layout)
-    else:
-        pages = parse(open("image-preview.wrp"))
-        page = pages[0]
+    app = QApplication([])
+
+    template_dir = dirname(template)
+    os.chdir(template_dir)
+    pages = parse(open(basename(template)))
+    page = pages[0]
 
     page.show()
 
@@ -397,5 +398,11 @@ def main(args):
 
 
 if __name__ == '__main__':
+    import os
     import sys
-    sys.exit(main(sys.argv))
+    if sys.argv[1:] and os.path.exists(sys.argv[1]):
+        template = sys.argv[1]
+        print("Parsing template %s" % template)
+        demo(template)
+    else:
+        print("Provide a wreport template")
