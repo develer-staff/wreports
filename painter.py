@@ -14,7 +14,7 @@ def paint_page(painter, page):
     """
     printer = painter.device()
     page_rect = printer.pageRect(QPrinter.DevicePixel)
-    # make qwidget output vectorial, rendering directly on a painter
+    # make qwidget output vectorial, rendering directly on a printer
     # results in a raster image in the pdf
     page_pic = QPicture()
     wpainter = QPainter(page_pic)
