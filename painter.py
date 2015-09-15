@@ -1,16 +1,17 @@
 #!/usr/bin/env python
 # encoding: utf-8
-
 from __future__ import division, print_function, absolute_import
 
 import sys
 
 from PyQt4.Qt import *
 
-import parser
-
 
 def paint_page(painter, page):
+    """
+    Given a `painter` and a `page` (a widget presumably created parsing a
+    wreport), renders the widget on the painter and returns a QPicture.
+    """
     printer = painter.device()
     page_rect = printer.pageRect(QPrinter.DevicePixel)
     # make qwidget output vectorial, rendering directly on a painter
@@ -29,6 +30,10 @@ def paint_page(painter, page):
 
 
 def paint_pages(printer, pages):
+    """
+    Given a `printer` and a list of `pages`, renders the widgets on the
+    printer, one per page, and returns a list of QPictures.
+    """
     pictures = []
     print("Composing output pdf")
     painter = QPainter(printer)
@@ -42,7 +47,10 @@ def paint_pages(printer, pages):
     return pictures
 
 
+__all__ = [paint_page, paint_pages]
+
 def main():
+    import parser
     app = QApplication(sys.argv)
 
     def go(w):
