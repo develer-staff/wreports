@@ -35,13 +35,11 @@ def paint_pages(printer, pages):
     printer, one per page, and returns a list of QPictures.
     """
     pictures = []
-    print("Composing output pdf")
     painter = QPainter(printer)
-    print("Adding %d pages..." % len(pages))
     for i, page in enumerate(pages):
-        if i > 0: # dopo la prima
+        # newPage before all pages after the first
+        if i > 0:
             printer.newPage()
-        print("Printing page %d..." % (i+1))
         pictures.append(paint_page(painter, page))
     painter.end()
     return pictures
