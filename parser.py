@@ -55,7 +55,7 @@ def _set_widget(widget,
 
 def _report(*args, **kwargs):
     """
-    Document root, simply a container o pages
+    Document root, simply a container of pages
     <report>
       ...
     </report>
@@ -63,32 +63,44 @@ def _report(*args, **kwargs):
     pass
 
 
-def _page(name=None):
+def _page(spacing=0,
+          margins=(0,0,0,0),
+          name=None,
+          child_layout="col"):
     """
-    The page is the container of all the page contents
+    The page is the container of all the page contents, a page contains a
+    default layout
     """
     page = QWidget()
-    _set_object(page, name=name)
-    # page.resize(*size)
+    col_name = name+"_layout" if name is not None else None
+    layouts = {"col": _col, "row": _row}
+    try:
+        _layout = layouts[child_layout]
+    except KeyError:
+        msg = "Invalid value %r for `child_layout`, use %s"
+        raise ValueError(msg % (child_layout, "|".join(layouts.keys())))
+    _layout(spacing=spacing, margins=margins, name=col_name, widget=page)
     return page
 
 
-def _vlayout(spacing=0,
-             margins=(0,0,0,0),
-             name=None,
-             widget=None,
-             layout=None):
+def _col(spacing=0,
+         margins=(0,0,0,0),
+         name=None,
+         widget=None,
+         layout=None):
     """
     Vertical layout, with some defaults better suited to printed output.
-    There are no tables (yet) in this markup, so nest more v|h layouts to build one.
-    <hlayout>
-      <vlayout>
+    There are no tables (yet) in this markup, so nest more col|row layouts to
+    build one.
+
+    <row>
+      <col>
         ...
-      </vlayout>
-      <vlayout>
+      </col>
+      <col>
         ...
-      </vlayout>
-    </hlayout>
+      </col>
+    </row>
     """
     vlayout = QVBoxLayout()
     _set_layout(vlayout,
@@ -100,13 +112,13 @@ def _vlayout(spacing=0,
     return vlayout
 
 
-def _hlayout(spacing=0,
-             margins=(0,0,0,0),
-             name=None,
-             widget=None,
-             layout=None):
+def _row(spacing=0,
+         margins=(0,0,0,0),
+         name=None,
+         widget=None,
+         layout=None):
     """
-    Horizontal layout, see _vlayout for details
+    Horizontal layout, see _col for details
     """
     hlayout = QHBoxLayout()
     _set_layout(hlayout,
@@ -118,11 +130,11 @@ def _hlayout(spacing=0,
     return hlayout
 
 
-def _label(widget=None,
-           layout=None,
-           width="Ignored",
-           height="Maximum",
-           name=None):
+def _text(widget=None,
+          layout=None,
+          width="Ignored",
+          height="Maximum",
+          name=None):
     """
     Text in the layout
     """
@@ -243,6 +255,7 @@ def _image(src,
                 name=name)
     return image
 
+
 # Attributes parsers
 
 def _parse_spacing(value):
@@ -303,24 +316,25 @@ def parse(source):
             if layouts:
                 kwargs["layout"] = layouts[-1]
 
-            def nfw(w):
-                if isinstance(w, QObject):
-                    return "<name=%s>" % w.objectName()
-                else:
-                    return w
-            named_args = tuple(nfw(a) for a in args)
-            named_kwargs = {k: nfw(kwargs[k]) for k in kwargs}
+            # def nfw(w):
+            #     if isinstance(w, QObject):
+            #         return "<name=%s>" % w.objectName()
+            #     else:
+            #         return w
+            # named_args = tuple(nfw(a) for a in args)
+            # named_kwargs = {k: nfw(kwargs[k]) for k in kwargs}
             # print("%s %s %s)" % ("  "*len(tags), named_args, named_kwargs))
 
             # print("_%s(*%r, **%r)" % (tag, args, kwargs))
             obj = hook(*args, **kwargs)
-            if "report" in tag:
+            if tag == "report":
                 pass
-            elif "layout" in tag:
+            elif tag in ("col", "row"):
                 layouts.append(obj)
             else:
-                if "page" in tag:
+                if tag == "page":
                     pages.append(obj)
+                    layouts.append(obj.layout())
                 widgets.append(obj)
         return f
 
@@ -329,18 +343,20 @@ def parse(source):
         # print("%s<%s>" % ("  "*len(tags), tag))
         obj = x(tag)(**attrs)
     def end_element(tag):
-        if "report" in tag:
+        if tag == "report":
             pass
-        elif "layout" in tag:
+        elif tag in ("col", "row"):
             layouts.pop()
         else:
+            if tag == "page":
+                layouts.pop()
             widgets.pop()
         # print("%s</%s>" % ("  "*len(tags), tag))
         popped_name = tags.pop()
         assert popped_name == tag, (popped_name, tag)
     def char_data(data):
         tag = tags[-1] if tags else None
-        if "label" in tag:
+        if tag == "text":
             widget = widgets[-1] if widgets else None
             if isinstance(widget, QLabel):
                 widget.setText(data.strip())
