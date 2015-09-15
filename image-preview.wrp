@@ -1,5 +1,47 @@
-<?xml version = "1.0"?>
-
+<?xml version = "1.0" encoding="utf-8" standalone="yes"?>
+<!DOCTYPE report [
+  <!ELEMENT report (page)*>
+  <!ELEMENT page (row|col|text|image|svg|vline|hline)*>
+  <!ATTLIST page
+            name CDATA #IMPLIED>
+  <!ELEMENT row (row|col|text|image|svg|vline|hline)*>
+  <!ATTLIST row
+            margins CDATA #IMPLIED
+            name CDATA #IMPLIED
+            spacing CDATA #IMPLIED>
+  <!ELEMENT col (row|col|text|image|svg|vline|hline)*>
+  <!ATTLIST col
+            name CDATA #IMPLIED
+            margins CDATA #IMPLIED
+            spacing CDATA #IMPLIED>
+  <!ELEMENT text (#PCDATA)>
+  <!ATTLIST text
+            name CDATA #IMPLIED
+            height CDATA #IMPLIED
+            width CDATA #IMPLIED>
+  <!ELEMENT vline EMPTY>
+  <!ATTLIST vline
+            name CDATA #IMPLIED
+            color CDATA #IMPLIED
+            width CDATA #IMPLIED>
+  <!ELEMENT hline EMPTY>
+  <!ATTLIST hline
+            name CDATA #IMPLIED
+            color CDATA #IMPLIED
+            height CDATA #IMPLIED>
+  <!ELEMENT svg EMPTY>
+  <!ATTLIST svg
+            name CDATA #IMPLIED
+            src CDATA #REQUIRED
+            height CDATA #IMPLIED
+            width CDATA #IMPLIED>
+  <!ELEMENT image EMPTY>
+  <!ATTLIST image
+            name CDATA #IMPLIED
+            src CDATA #REQUIRED
+            height CDATA #IMPLIED
+            width CDATA #IMPLIED>
+  ]>
 <report>
   <page name="page1">
     <row name="row_layout">
