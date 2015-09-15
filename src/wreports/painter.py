@@ -6,6 +6,10 @@ import sys
 
 from PyQt4.Qt import *
 
+__all__ = ["paint_page", "paint_pages"]
+
+
+# public api
 
 def paint_page(painter, page):
     """
@@ -45,7 +49,7 @@ def paint_pages(printer, pages):
     return pictures
 
 
-__all__ = ["paint_page", "paint_pages"]
+# demo code
 
 def main():
     import parser

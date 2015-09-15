@@ -7,6 +7,9 @@ import types
 
 from PyQt4.Qt import *
 
+
+__all__ = ["parse"]
+
 # Helper functions to apply attributes to qwidgets
 
 def _set_object(obj, parent=None, name=None):
@@ -151,7 +154,7 @@ def _text(widget=None,
 def _hline(color="black",
            widget=None,
            layout=None,
-           width=1,
+           line_width=1,
            name=None):
     """
     Horizontal line
@@ -159,7 +162,7 @@ def _hline(color="black",
     line = QFrame()
     line.setFrameShadow(QFrame.Plain)
     line.setFrameShape(QFrame.HLine)
-    line.setLineWidth(width)
+    line.setLineWidth(line_width)
     _set_widget(line,
                 layout=layout,
                 parent=widget,
@@ -172,7 +175,7 @@ def _hline(color="black",
 def _vline(color="black",
            widget=None,
            layout=None,
-           width=1,
+           line_width=1,
            name=None):
     """
     Vertical line
@@ -180,7 +183,7 @@ def _vline(color="black",
     line = QFrame()
     line.setFrameShadow(QFrame.Plain)
     line.setFrameShape(QFrame.VLine)
-    line.setLineWidth(width)
+    line.setLineWidth(line_width)
     _set_widget(line,
                 layout=layout,
                 parent=widget,
@@ -368,9 +371,6 @@ def parse(source):
     _parse(source)
 
     return pages
-
-
-__all__ = ["parse"]
 
 
 # Command line
