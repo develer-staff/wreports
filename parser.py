@@ -369,7 +369,8 @@ def parse(source):
 
     return pages
 
-__all__ = [parse]
+
+__all__ = ["parse"]
 
 
 # Command line

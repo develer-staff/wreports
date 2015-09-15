@@ -45,7 +45,7 @@ def paint_pages(printer, pages):
     return pictures
 
 
-__all__ = [paint_page, paint_pages]
+__all__ = ["paint_page", "paint_pages"]
 
 def main():
     import parser
