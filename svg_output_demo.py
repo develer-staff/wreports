@@ -13,7 +13,7 @@ import parser
 def main():
     app = QApplication(sys.argv)
 
-    def paint_svg(printer, painter, page):
+    def paint_page(printer, painter, page):
         page_rect = printer.pageRect(QPrinter.DevicePixel)
         # make qwidget output vectorial, rendering directly on a painter
         # results in a raster image in the pdf
@@ -51,7 +51,7 @@ def main():
             if i > 0: # dopo la prima
                 printer.newPage()
             print("Printing page %d..." % (i+1))
-            paint_svg(printer, painter, page)
+            paint_page(printer, painter, page)
         painter.end()
 
         print("done!")
