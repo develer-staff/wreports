@@ -10,23 +10,40 @@ from PyQt4.Qt import *
 import parser
 
 
+def paint_page(painter, page):
+    printer = painter.device()
+    page_rect = printer.pageRect(QPrinter.DevicePixel)
+    # make qwidget output vectorial, rendering directly on a painter
+    # results in a raster image in the pdf
+    page_pic = QPicture()
+    wpainter = QPainter(page_pic)
+    pdevice = painter.device()
+    wdevice = wpainter.device()
+    ratioX = pdevice.physicalDpiX() / wdevice.physicalDpiX()
+    ratioY = pdevice.physicalDpiY() / wdevice.physicalDpiY()
+    page.resize(page_rect.width()/ratioX, page_rect.height()/ratioY)
+    page.render(wpainter, flags=QWidget.DrawChildren)
+    wpainter.end()
+    painter.drawPicture(0, 0, page_pic)
+    return page_pic
+
+
+def paint_pages(printer, pages):
+    pictures = []
+    print("Composing output pdf")
+    painter = QPainter(printer)
+    print("Adding %d pages..." % len(pages))
+    for i, page in enumerate(pages):
+        if i > 0: # dopo la prima
+            printer.newPage()
+        print("Printing page %d..." % (i+1))
+        pictures.append(paint_page(painter, page))
+    painter.end()
+    return pictures
+
+
 def main():
     app = QApplication(sys.argv)
-
-    def paint_page(printer, painter, page):
-        page_rect = printer.pageRect(QPrinter.DevicePixel)
-        # make qwidget output vectorial, rendering directly on a painter
-        # results in a raster image in the pdf
-        page_pic = QPicture()
-        wpainter = QPainter(page_pic)
-        pdevice = painter.device()
-        wdevice = wpainter.device()
-        ratioX = pdevice.physicalDpiX() / wdevice.physicalDpiX()
-        ratioY = pdevice.physicalDpiY() / wdevice.physicalDpiY()
-        page.resize(page_rect.width()/ratioX, page_rect.height()/ratioY)
-        page.render(wpainter, flags=QWidget.DrawChildren)
-        wpainter.end()
-        painter.drawPicture(0, 0, page_pic)
 
     def go(w):
         print("Setup printer...")
@@ -43,16 +60,7 @@ def main():
 
         print("Parsing template")
         pages = parser.parse(open("image-preview.wrp"))
-
-        print("Composing output pdf")
-        painter = QPainter(printer)
-        print("Adding %d pages..." % len(pages))
-        for i, page in enumerate(pages):
-            if i > 0: # dopo la prima
-                printer.newPage()
-            print("Printing page %d..." % (i+1))
-            paint_page(printer, painter, page)
-        painter.end()
+        paint_pages(printer, pages)
 
         print("done!")
 
