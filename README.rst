@@ -4,9 +4,12 @@ wreports
 Installation
 -------------
 
-``sh
-        python setup.py clean build install
-``
+Install using ``setup.py`` or ``pip``:
+
+.. code-block:: sh
+
+    python setup.py clean build install
+
 
 Licence
 --------
