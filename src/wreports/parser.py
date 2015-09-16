@@ -152,7 +152,7 @@ def _text(widget=None,
 def _hline(color="black",
            widget=None,
            layout=None,
-           line_horizontal=1,
+           line_width=1,
            name=None):
     """
     Horizontal line
@@ -173,7 +173,7 @@ def _hline(color="black",
 def _vline(color="black",
            widget=None,
            layout=None,
-           line_horizontal=1,
+           line_width=1,
            name=None):
     """
     Vertical line
