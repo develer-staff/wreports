@@ -38,19 +38,17 @@ def _set_layout(layout,
 
 def _set_widget(widget,
                 layout=None,
-                width=None,
-                height=None,
+                horizontal=None,
+                vertical=None,
                 **kwargs):
     if layout is not None:
         layout.addWidget(widget)
-    if (width, height) is not (None, None):
+    if (horizontal, vertical) is not (None, None):
         policy = QSizePolicy()
-        if width is not None:
-            horizontal = getattr(QSizePolicy, width)
-            policy.setHorizontalPolicy(horizontal)
-        if height is not None:
-            vertical = getattr(QSizePolicy, height)
-            policy.setVerticalPolicy(vertical)
+        if horizontal is not None:
+            policy.setHorizontalPolicy(getattr(QSizePolicy, horizontal))
+        if vertical is not None:
+            policy.setVerticalPolicy(getattr(QSizePolicy, vertical))
         widget.setSizePolicy(policy)
     _set_object(widget, **kwargs)
 
@@ -135,8 +133,8 @@ def _row(spacing=0,
 
 def _text(widget=None,
           layout=None,
-          width="Ignored",
-          height="Maximum",
+          horizontal="Ignored",
+          vertical="Maximum",
           name=None):
     """
     Text in the layout
@@ -145,8 +143,8 @@ def _text(widget=None,
     _set_widget(label,
                 layout=layout,
                 parent=widget,
-                width=width,
-                height=height,
+                horizontal=horizontal,
+                vertical=vertical,
                 name=name)
     return label
 
@@ -154,7 +152,7 @@ def _text(widget=None,
 def _hline(color="black",
            widget=None,
            layout=None,
-           line_width=1,
+           line_horizontal=1,
            name=None):
     """
     Horizontal line
@@ -166,8 +164,8 @@ def _hline(color="black",
     _set_widget(line,
                 layout=layout,
                 parent=widget,
-                width="Minimum",
-                height="Fixed",
+                horizontal="Minimum",
+                vertical="Fixed",
                 name=name)
     return line
 
@@ -175,7 +173,7 @@ def _hline(color="black",
 def _vline(color="black",
            widget=None,
            layout=None,
-           line_width=1,
+           line_horizontal=1,
            name=None):
     """
     Vertical line
@@ -187,8 +185,8 @@ def _vline(color="black",
     _set_widget(line,
                 layout=layout,
                 parent=widget,
-                width="Fixed",
-                height="Minimum",
+                horizontal="Fixed",
+                vertical="Minimum",
                 name=name)
     return line
 
@@ -221,8 +219,8 @@ class AspectRatioSvgWidget(QSvgWidget):
 def _svg(src,
          widget=None,
          layout=None,
-         width="Preferred",
-         height="MinimumExpanding",
+         horizontal="Preferred",
+         vertical="MinimumExpanding",
          name=None):
     """
     Svg tag, provide a pointer to a valid svg file
@@ -231,8 +229,8 @@ def _svg(src,
     _set_widget(svg,
                 layout=layout,
                 parent=widget,
-                width=width,
-                height=height,
+                horizontal=horizontal,
+                vertical=vertical,
                 name=name)
     # svg.setStyleSheet("SvgPlaceholder { background: yellow }")
     return svg
@@ -241,8 +239,8 @@ def _svg(src,
 def _image(src,
            widget=None,
            layout=None,
-           width="Preferred",
-           height="MinimumExpanding",
+           horizontal="Preferred",
+           vertical="MinimumExpanding",
            name=None):
     """
     image tag, provide a pointer to a valid image file
@@ -253,8 +251,8 @@ def _image(src,
     _set_widget(image,
                 layout=layout,
                 parent=widget,
-                width=width,
-                height=height,
+                horizontal=horizontal,
+                vertical=vertical,
                 name=name)
     return image
 

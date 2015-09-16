@@ -18,8 +18,8 @@
   <!ELEMENT text (#PCDATA)>
   <!ATTLIST text
             name CDATA #IMPLIED
-            height (Minimum|Maximum|Preferred|MinimumExpanding|Expanding|Ignored) "Maximum"
-            width (Minimum|Maximum|Preferred|MinimumExpanding|Expanding|Ignored) "Ignored">
+            vertical (Minimum|Maximum|Preferred|MinimumExpanding|Expanding|Ignored) "Maximum"
+            horizontal (Minimum|Maximum|Preferred|MinimumExpanding|Expanding|Ignored) "Ignored">
   <!ELEMENT vline EMPTY>
   <!ATTLIST vline
             name CDATA #IMPLIED
@@ -34,56 +34,56 @@
   <!ATTLIST svg
             name CDATA #IMPLIED
             src CDATA #REQUIRED
-            height (Minimum|Maximum|Preferred|MinimumExpanding|Expanding|Ignored) "Preferred"
-            width (Minimum|Maximum|Preferred|MinimumExpanding|Expanding|Ignored) "MinimumExpanding">
+            vertical (Minimum|Maximum|Preferred|MinimumExpanding|Expanding|Ignored) "Preferred"
+            horizontal (Minimum|Maximum|Preferred|MinimumExpanding|Expanding|Ignored) "MinimumExpanding">
   <!ELEMENT image EMPTY>
   <!ATTLIST image
             name CDATA #IMPLIED
             src CDATA #REQUIRED
-            height (Minimum|Maximum|Preferred|MinimumExpanding|Expanding|Ignored) "Preferred"
-            width (Minimum|Maximum|Preferred|MinimumExpanding|Expanding|Ignored) "MinimumExpanding">
+            vertical (Minimum|Maximum|Preferred|MinimumExpanding|Expanding|Ignored) "Preferred"
+            horizontal (Minimum|Maximum|Preferred|MinimumExpanding|Expanding|Ignored) "MinimumExpanding">
   ]>
 <report>
   <page name="page1">
     <row name="row_layout">
       <col name="image_layout">
         <row name="header_layout" margins="(5,5,5,5)" spacing="5">
-          <text width="Ignored" name="col1">Some text</text>
+          <text horizontal="Ignored" name="col1">Some text</text>
           <vline color="black" />
-          <text width="Ignored" name="col2">Other text</text>
+          <text horizontal="Ignored" name="col2">Other text</text>
         </row>
         <svg src="piece1.svg" name="small_preview" />
         <hline color="black" />
         <row name="footer_layout" margins="(5,5,5,5)">
-          <text width="Ignored" name="footer">Footer</text>
+          <text horizontal="Ignored" name="footer">Footer</text>
         </row>
         <hline color="black" />
       </col>
       <vline/>
       <col name="image_layout">
         <row name="header_layout" margins="(5,5,5,5)" spacing="5">
-          <text width="Ignored" name="col1">Some text</text>
+          <text horizontal="Ignored" name="col1">Some text</text>
           <vline color="black" />
-          <text width="Ignored" name="col2">Other text</text>
+          <text horizontal="Ignored" name="col2">Other text</text>
         </row>
         <svg src="piece2.svg" name="small_preview" />
         <hline color="black" />
         <row name="footer_layout" margins="(5,5,5,5)">
-          <text width="Ignored" name="footer">Footer</text>
+          <text horizontal="Ignored" name="footer">Footer</text>
         </row>
         <hline color="black" />
       </col>
       <vline/>
       <col name="image_layout">
         <row name="header_layout" margins="(5,5,5,5)" spacing="5">
-          <text width="Ignored" name="col1">Some text</text>
+          <text horizontal="Ignored" name="col1">Some text</text>
           <vline color="black" />
-          <text width="Ignored" name="col2">Other text</text>
+          <text horizontal="Ignored" name="col2">Other text</text>
         </row>
         <svg src="piece3.svg" name="small_preview" />
         <hline color="black" />
         <row name="footer_layout" margins="(5,5,5,5)">
-          <text width="Ignored" name="footer">Footer</text>
+          <text horizontal="Ignored" name="footer">Footer</text>
         </row>
         <hline color="black" />
       </col>
@@ -91,42 +91,42 @@
     <row name="row_layout">
       <col name="image_layout">
         <row name="header_layout" margins="(5,5,5,5)" spacing="5">
-          <text width="Ignored" name="col1">Some text</text>
+          <text horizontal="Ignored" name="col1">Some text</text>
           <vline color="black" />
-          <text width="Ignored" name="col2">Other text</text>
+          <text horizontal="Ignored" name="col2">Other text</text>
         </row>
         <svg src="piece1.svg" name="small_preview" />
         <hline color="black" />
         <row name="footer_layout" margins="(5,5,5,5)">
-          <text width="Ignored" name="footer">Footer</text>
+          <text horizontal="Ignored" name="footer">Footer</text>
         </row>
         <hline color="black" />
       </col>
       <vline/>
       <col name="image_layout">
         <row name="header_layout" margins="(5,5,5,5)" spacing="5">
-          <text width="Ignored" name="col1">Some text</text>
+          <text horizontal="Ignored" name="col1">Some text</text>
           <vline color="black" />
-          <text width="Ignored" name="col2">Other text</text>
+          <text horizontal="Ignored" name="col2">Other text</text>
         </row>
         <svg src="piece2.svg" name="small_preview" />
         <hline color="black" />
         <row name="footer_layout" margins="(5,5,5,5)">
-          <text width="Ignored" name="footer">Footer</text>
+          <text horizontal="Ignored" name="footer">Footer</text>
         </row>
         <hline color="black" />
       </col>
       <vline/>
       <col name="image_layout">
         <row name="header_layout" margins="(5,5,5,5)" spacing="5">
-          <text width="Ignored" name="col1">Some text</text>
+          <text horizontal="Ignored" name="col1">Some text</text>
           <vline color="black" />
-          <text width="Ignored" name="col2">Other text</text>
+          <text horizontal="Ignored" name="col2">Other text</text>
         </row>
         <svg src="piece3.svg" name="small_preview" />
         <hline color="black" />
         <row name="footer_layout" margins="(5,5,5,5)">
-          <text width="Ignored" name="footer">Footer</text>
+          <text horizontal="Ignored" name="footer">Footer</text>
         </row>
         <hline color="black" />
       </col>
@@ -136,42 +136,42 @@
     <row name="row_layout">
       <col name="image_layout">
         <row name="header_layout" margins="(5,5,5,5)" spacing="5">
-          <text width="Ignored" name="col1">Some text</text>
+          <text horizontal="Ignored" name="col1">Some text</text>
           <vline color="black" />
-          <text width="Ignored" name="col2">Other text</text>
+          <text horizontal="Ignored" name="col2">Other text</text>
         </row>
         <svg src="piece1.svg" name="small_preview" />
         <hline color="black" />
         <row name="footer_layout" margins="(5,5,5,5)">
-          <text width="Ignored" name="footer">Footer</text>
+          <text horizontal="Ignored" name="footer">Footer</text>
         </row>
         <hline color="black" />
       </col>
       <vline/>
       <col name="image_layout">
         <row name="header_layout" margins="(5,5,5,5)" spacing="5">
-          <text width="Ignored" name="col1">Some text</text>
+          <text horizontal="Ignored" name="col1">Some text</text>
           <vline color="black" />
-          <text width="Ignored" name="col2">Other text</text>
+          <text horizontal="Ignored" name="col2">Other text</text>
         </row>
         <svg src="piece2.svg" name="small_preview" />
         <hline color="black" />
         <row name="footer_layout" margins="(5,5,5,5)">
-          <text width="Ignored" name="footer">Footer</text>
+          <text horizontal="Ignored" name="footer">Footer</text>
         </row>
         <hline color="black" />
       </col>
       <vline/>
       <col name="image_layout">
         <row name="header_layout" margins="(5,5,5,5)" spacing="5">
-          <text width="Ignored" name="col1">Some text</text>
+          <text horizontal="Ignored" name="col1">Some text</text>
           <vline color="black" />
-          <text width="Ignored" name="col2">Other text</text>
+          <text horizontal="Ignored" name="col2">Other text</text>
         </row>
         <svg src="piece3.svg" name="small_preview" />
         <hline color="black" />
         <row name="footer_layout" margins="(5,5,5,5)">
-          <text width="Ignored" name="footer">Footer</text>
+          <text horizontal="Ignored" name="footer">Footer</text>
         </row>
         <hline color="black" />
       </col>
@@ -179,42 +179,42 @@
     <row name="row_layout">
       <col name="image_layout">
         <row name="header_layout" margins="(5,5,5,5)" spacing="5">
-          <text width="Ignored" name="col1">Some text</text>
+          <text horizontal="Ignored" name="col1">Some text</text>
           <vline color="black" />
-          <text width="Ignored" name="col2">Other text</text>
+          <text horizontal="Ignored" name="col2">Other text</text>
         </row>
         <svg src="piece1.svg" name="small_preview" />
         <hline color="black" />
         <row name="footer_layout" margins="(5,5,5,5)">
-          <text width="Ignored" name="footer">Footer</text>
+          <text horizontal="Ignored" name="footer">Footer</text>
         </row>
         <hline color="black" />
       </col>
       <vline/>
       <col name="image_layout">
         <row name="header_layout" margins="(5,5,5,5)" spacing="5">
-          <text width="Ignored" name="col1">Some text</text>
+          <text horizontal="Ignored" name="col1">Some text</text>
           <vline color="black" />
-          <text width="Ignored" name="col2">Other text</text>
+          <text horizontal="Ignored" name="col2">Other text</text>
         </row>
         <svg src="piece2.svg" name="small_preview" />
         <hline color="black" />
         <row name="footer_layout" margins="(5,5,5,5)">
-          <text width="Ignored" name="footer">Footer</text>
+          <text horizontal="Ignored" name="footer">Footer</text>
         </row>
         <hline color="black" />
       </col>
       <vline/>
       <col name="image_layout">
         <row name="header_layout" margins="(5,5,5,5)" spacing="5">
-          <text width="Ignored" name="col1">Some text</text>
+          <text horizontal="Ignored" name="col1">Some text</text>
           <vline color="black" />
-          <text width="Ignored" name="col2">Other text</text>
+          <text horizontal="Ignored" name="col2">Other text</text>
         </row>
         <svg src="piece3.svg" name="small_preview" />
         <hline color="black" />
         <row name="footer_layout" margins="(5,5,5,5)">
-          <text width="Ignored" name="footer">Footer</text>
+          <text horizontal="Ignored" name="footer">Footer</text>
         </row>
         <hline color="black" />
       </col>
