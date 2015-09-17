@@ -5,7 +5,7 @@ from __future__ import division, print_function, absolute_import
 
 from PyQt4.Qt import *
 
-__all__ = ["paint_page", "paint_pages"]
+__all__ = ["paint_page"]
 
 
 # public api
@@ -32,7 +32,9 @@ def paint_page(painter, page):
     return page_pic
 
 
-def paint_pages(printer, pages):
+# demo code
+
+def paint_pages(printer, pages, unit=QPrinter.DevicePixel):
     """
     Given a `printer` and a list of `pages`, renders the widgets on the
     printer, one per page, and returns a list of QPictures.
@@ -43,12 +45,8 @@ def paint_pages(printer, pages):
         # newPage before all pages after the first
         if i > 0:
             printer.newPage()
-        pictures.append(paint_page(painter, page))
     painter.end()
     return pictures
-
-
-# demo code
 
 def demo(template):
     import parser
