@@ -10,13 +10,11 @@ __all__ = ["paint_page"]
 
 # public api
 
-def paint_page(painter, page):
+def paint_page(painter, page, page_rect):
     """
     Given a `painter` and a `page` (a widget presumably created parsing a
     wreport), renders the widget on the painter and returns a QPicture.
     """
-    printer = painter.device()
-    page_rect = printer.pageRect(QPrinter.DevicePixel)
     # make qwidget output vectorial, rendering directly on a printer
     # results in a raster image in the pdf
     page_pic = QPicture()
@@ -45,6 +43,7 @@ def paint_pages(printer, pages, unit=QPrinter.DevicePixel):
         # newPage before all pages after the first
         if i > 0:
             printer.newPage()
+        pictures.append(paint_page(painter, page, printer.pageRect(unit)))
     painter.end()
     return pictures
 
