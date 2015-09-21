@@ -301,7 +301,7 @@ def _image(src,
            name=None,
            **kwargs):
     """
-    image tag, provide a pointer to a valid image file
+    Image tag, provide a pointer to a valid image file
     """
     pixmap = QPixmap(src)
     assert not pixmap.isNull(), "src:'%s' is of an unknown format" % (src)
