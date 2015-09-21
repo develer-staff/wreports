@@ -47,7 +47,7 @@ def _set_widget(widget,
     if layout is not None:
         layout.addWidget(widget)
     if (horizontal, vertical) is not (None, None):
-        policy = QSizePolicy()
+        policy = widget.sizePolicy()
         if horizontal is not None:
             policy.setHorizontalPolicy(getattr(QSizePolicy, horizontal))
         if vertical is not None:
