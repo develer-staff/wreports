@@ -40,6 +40,7 @@ def _set_widget(widget,
                 layout=None,
                 horizontal=None,
                 vertical=None,
+                size=None,
                 **kwargs):
     if layout is not None:
         layout.addWidget(widget)
@@ -50,6 +51,13 @@ def _set_widget(widget,
         if vertical is not None:
             policy.setVerticalPolicy(getattr(QSizePolicy, vertical))
         widget.setSizePolicy(policy)
+    if size is not None:
+        qsize = QSize(*size)
+        print("Setting sizeHint to %s" % qsize)
+        widget.sizeHint = lambda: qsize
+        widget.setMinimumSize(qsize)
+        widget.setMaximumSize(qsize)
+    widget.updateGeometry()
     _set_object(widget, **kwargs)
 
 # Tag function, called for each _<tag> found
@@ -135,7 +143,8 @@ def _text(widget=None,
           layout=None,
           horizontal="Ignored",
           vertical="Maximum",
-          name=None):
+          name=None,
+          **kwargs):
     """
     Text in the layout
     """
@@ -145,7 +154,8 @@ def _text(widget=None,
                 parent=widget,
                 horizontal=horizontal,
                 vertical=vertical,
-                name=name)
+                name=name,
+                **kwargs)
     return label
 
 
@@ -153,7 +163,8 @@ def _hline(color="black",
            widget=None,
            layout=None,
            line_width=1,
-           name=None):
+           name=None,
+           **kwargs):
     """
     Horizontal line
     """
@@ -166,7 +177,8 @@ def _hline(color="black",
                 parent=widget,
                 horizontal="Minimum",
                 vertical="Fixed",
-                name=name)
+                name=name,
+                **kwargs)
     return line
 
 
@@ -174,7 +186,8 @@ def _vline(color="black",
            widget=None,
            layout=None,
            line_width=1,
-           name=None):
+           name=None,
+           **kwargs):
     """
     Vertical line
     """
@@ -187,12 +200,10 @@ def _vline(color="black",
                 parent=widget,
                 horizontal="Fixed",
                 vertical="Minimum",
-                name=name)
+                name=name,
+                **kwargs)
     return line
 
-# Image rendering is done in two steps, the first run we detect the size of the
-# image in the document, in the second step we render the image correctly scaled
-# into the reserved place (vectorial svn render).
 
 class AspectRatioSvgWidget(QSvgWidget):
     def paintEvent(self, paint_event):
@@ -216,12 +227,14 @@ class AspectRatioSvgWidget(QSvgWidget):
         new_rect = QRectF(new_left, new_top, new_width, new_height)
         self.renderer().render(painter, new_rect)
 
+
 def _svg(src,
          widget=None,
          layout=None,
          horizontal="Preferred",
          vertical="MinimumExpanding",
-         name=None):
+         name=None,
+         **kwargs):
     """
     Svg tag, provide a pointer to a valid svg file
     """
@@ -231,7 +244,8 @@ def _svg(src,
                 parent=widget,
                 horizontal=horizontal,
                 vertical=vertical,
-                name=name)
+                name=name,
+                **kwargs)
     # svg.setStyleSheet("SvgPlaceholder { background: yellow }")
     return svg
 
@@ -241,7 +255,8 @@ def _image(src,
            layout=None,
            horizontal="Preferred",
            vertical="MinimumExpanding",
-           name=None):
+           name=None,
+           **kwargs):
     """
     image tag, provide a pointer to a valid image file
     """
@@ -253,7 +268,8 @@ def _image(src,
                 parent=widget,
                 horizontal=horizontal,
                 vertical=vertical,
-                name=name)
+                name=name,
+                **kwargs)
     return image
 
 

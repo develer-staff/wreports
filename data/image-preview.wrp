@@ -18,6 +18,7 @@
   <!ELEMENT text (#PCDATA)>
   <!ATTLIST text
             name CDATA #IMPLIED
+            size CDATA #IMPLIED
             vertical (Minimum|Maximum|Preferred|MinimumExpanding|Expanding|Ignored) "Maximum"
             horizontal (Minimum|Maximum|Preferred|MinimumExpanding|Expanding|Ignored) "Ignored">
   <!ELEMENT vline EMPTY>
@@ -33,12 +34,14 @@
   <!ELEMENT svg EMPTY>
   <!ATTLIST svg
             name CDATA #IMPLIED
+            size CDATA #IMPLIED
             src CDATA #REQUIRED
             vertical (Minimum|Maximum|Preferred|MinimumExpanding|Expanding|Ignored) "Preferred"
             horizontal (Minimum|Maximum|Preferred|MinimumExpanding|Expanding|Ignored) "MinimumExpanding">
   <!ELEMENT image EMPTY>
   <!ATTLIST image
             name CDATA #IMPLIED
+            size CDATA #IMPLIED
             src CDATA #REQUIRED
             vertical (Minimum|Maximum|Preferred|MinimumExpanding|Expanding|Ignored) "Preferred"
             horizontal (Minimum|Maximum|Preferred|MinimumExpanding|Expanding|Ignored) "MinimumExpanding">
