@@ -4,7 +4,9 @@ from __future__ import print_function, absolute_import, division
 
 import xml.parsers.expat
 import types
+import textwrap
 
+import mistune
 from PyQt4.Qt import *
 
 
@@ -78,7 +80,7 @@ def _page(spacing=0,
           child_layout="col"):
     """
     The page is the container of all the page contents, a page contains a
-    default layout
+    default layout (see special handling in `parse` function).
     """
     page = QWidget()
     col_name = name+"_layout" if name is not None else None
@@ -139,14 +141,14 @@ def _row(spacing=0,
     return hlayout
 
 
-def _text(widget=None,
-          layout=None,
-          horizontal="Ignored",
-          vertical="Maximum",
-          name=None,
-          **kwargs):
+def _label(widget=None,
+           layout=None,
+           horizontal="Ignored",
+           vertical="Maximum",
+           name=None,
+           **kwargs):
     """
-    Text in the layout
+    Single line text in the layout
     """
     label = QLabel()
     _set_widget(label,
@@ -157,6 +159,46 @@ def _text(widget=None,
                 name=name,
                 **kwargs)
     return label
+
+
+class TextViewer(QWidget):
+    def __init__(self, *args, **kwargs):
+        super(TextViewer, self).__init__(*args, **kwargs)
+        self._document = QTextDocument(self)
+        self._document.setUseDesignMetrics(True)
+    def document(self):
+        return self._document
+    def setHtml(self, html):
+        self._document.setHtml(html)
+    def resizeEvent(self, resize_event):
+        size = resize_event.size()
+        self._document.setPageSize(QSizeF(size.width(), size.height()))
+        self.setMaximumHeight(self._document.size().height())
+    def paintEvent(self, paint_event):
+        print("size = %s" % self._document.size())
+        print("lines = %s" % self._document.lineCount())
+        painter = QPainter(self)
+        size = self._document.pageSize()
+        self._document.drawContents(painter, QRectF(0, 0, size.width(), size.height()))
+
+def _text(widget=None,
+          layout=None,
+          horizontal="MinimumExpanding",
+          vertical="Maximum",
+          name=None,
+          **kwargs):
+    """
+    Multiline markdown formatted text in the layout
+    """
+    text = TextViewer()
+    _set_widget(text,
+                layout=layout,
+                parent=widget,
+                horizontal=horizontal,
+                vertical=vertical,
+                name=name,
+                **kwargs)
+    return text
 
 
 def _hline(color="black",
@@ -305,6 +347,24 @@ def _parse_color(value):
     except:
         raise ValueError("Invalid color %r, provide a valid QColor" % value)
 
+# Markdown helpers
+
+class EvenOddRendered(mistune.Renderer):
+    def __init__(self, *args, **kwargs):
+        super(EvenOddRendered, self).__init__(*args, **kwargs)
+        self._even_odd = False
+    def table(self, header, body):
+        out = super(EvenOddRendered, self).table(header, body)
+        return out.replace("<table>", '<table width="100%">', 1)
+    def table_row(self, content):
+        out = super(EvenOddRendered, self).table_row(content)
+        if content.strip().startswith("<th>"):
+            cls = 'class="header"'
+        else:
+            cls = 'class="even"' if self._even_odd else 'class="odd"'
+            self._even_odd = not self._even_odd
+        out = out.replace("<tr>", "<tr %s>" % cls, 1)
+        return out
 
 # Entrypoint
 
@@ -319,6 +379,7 @@ def parse(source):
     widgets = []
     layouts = []
     pages = []
+    buffers = {"text": [], "label": []}
 
     parsers = {}
     for parser_name in globals():
@@ -366,6 +427,31 @@ def parse(source):
         # print("%s<%s>" % ("  "*len(tags), tag))
         obj = x(tag)(**attrs)
     def end_element(tag):
+        if tag == "text":
+            if buffers["text"]:
+                widget = widgets[-1] if widgets else None
+                if isinstance(widget, TextViewer):
+                    css = textwrap.dedent("""
+                    <style type="text/css">
+                        tr.header {background: #BBB}
+                        tr.even {background: #CCC}
+                        tr.odd {background: #FFF}
+                    </style>
+                    """).strip()
+                    text = "".join(buffers["text"])
+                    code = textwrap.dedent(text).strip()
+                    html = mistune.Markdown(EvenOddRendered())(code)
+                    print("setHtml <- %s" % html)
+                    widget.setHtml("%s\n%s" % (css, html))
+            buffers["text"] = []
+        elif tag == "label":
+            if buffers["label"]:
+                widget = widgets[-1] if widgets else None
+                if isinstance(widget, QLabel):
+                    text = "".join(buffers["label"])
+                    widget.setText(text.strip())
+            buffers["label"] = []
+
         if tag == "report":
             pass
         elif tag in ("col", "row"):
@@ -379,10 +465,8 @@ def parse(source):
         assert popped_name == tag, (popped_name, tag)
     def char_data(data):
         tag = tags[-1] if tags else None
-        if tag == "text":
-            widget = widgets[-1] if widgets else None
-            if isinstance(widget, QLabel):
-                widget.setText(data.strip())
+        if tag in ("label", "text"):
+            buffers[tag] += [data]
 
     p.StartElementHandler = start_element
     p.EndElementHandler = end_element
