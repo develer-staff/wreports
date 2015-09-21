@@ -249,6 +249,13 @@ def _vline(color="black",
 
 
 class AspectRatioSvgWidget(QSvgWidget):
+    def __init__(self, *args, **kwargs):
+        super(AspectRatioSvgWidget, self).__init__(*args, **kwargs)
+        policy = self.sizePolicy()
+        policy.setHeightForWidth(True)
+        self.setSizePolicy(policy)
+    def heightForWidth(self, w):
+        return w
     def paintEvent(self, paint_event):
         painter = QPainter(self)
         view_box = self.renderer().viewBox()
