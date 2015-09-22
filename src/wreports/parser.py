@@ -167,6 +167,7 @@ class TextViewer(QWidget):
         super(TextViewer, self).__init__(*args, **kwargs)
         self._document = QTextDocument(self)
         self._document.setUseDesignMetrics(True)
+        self._page_number = 0
     def document(self):
         return self._document
     def setHtml(self, html):
@@ -196,9 +197,20 @@ class TextViewer(QWidget):
         self._updateHtml()
     def paintEvent(self, paint_event):
         painter = QPainter(self)
-        margin = self._margin()
-        painter.translate(0, -margin)
+        if self._page_number == 0:
+            margin = self._margin()
+            painter.translate(0, -margin)
+        else:
+            height = self._document.pageSize().height()
+            painter.translate(0, self._page_number*height)
         self._document.drawContents(painter)
+    def pageCount(self):
+        return self._document.pageCount()
+    def setPageNumber(self, num):
+        self._page_number = num
+        self.update()
+    def pageNumber(self):
+        return self._page_number
 
 def _text(widget=None,
           layout=None,
