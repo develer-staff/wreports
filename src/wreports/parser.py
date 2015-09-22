@@ -163,24 +163,43 @@ def _label(widget=None,
 
 
 class TextViewer(QWidget):
-    def __init__(self, *args, **kwargs):
+    def __init__(self, page, *args, **kwargs):
+        self.page = page
         super(TextViewer, self).__init__(*args, **kwargs)
         self._document = QTextDocument(self)
         self._document.setUseDesignMetrics(True)
     def document(self):
         return self._document
     def setHtml(self, html):
+        self._html = html
+        self._updateHtml()
+    def _margin(self):
+        return self.page.height() - self.height()
+    def _updateHtml(self):
+        css = textwrap.dedent("""
+        <style type="text/css">
+            tr.header {background: #BBB}
+            tr.even {background: #CCC}
+            tr.odd {background: #FFF}
+            div.markdown {margin-top: %(margin)dpx}
+        </style>
+        """).strip()
+        css = css % {"margin": self._margin()}
+        print("css = %s" % css)
+        html = '%s\n<div class="markdown">%s<span>' % (css, self._html)
+        #print("setHtml <- %s" % html)
         self._document.setHtml(html)
     def resizeEvent(self, resize_event):
-        size = resize_event.size()
+        size = self.page.size()
+        print("setPageSize <- %s" % size)
         self._document.setPageSize(QSizeF(size.width(), size.height()))
-        self.setMaximumHeight(self._document.size().height())
+        print("self.size = %s" % self.size())
+        self._updateHtml()
     def paintEvent(self, paint_event):
-        print("size = %s" % self._document.size())
-        print("lines = %s" % self._document.lineCount())
         painter = QPainter(self)
-        size = self._document.pageSize()
-        self._document.drawContents(painter, QRectF(0, 0, size.width(), size.height()))
+        margin = self._margin()
+        painter.translate(0, -margin)
+        self._document.drawContents(painter)
 
 def _text(widget=None,
           layout=None,
@@ -191,7 +210,7 @@ def _text(widget=None,
     """
     Multiline markdown formatted text in the layout
     """
-    text = TextViewer()
+    text = TextViewer(widget)
     _set_widget(text,
                 layout=layout,
                 parent=widget,
@@ -448,18 +467,10 @@ def parse(source):
             if buffers["text"]:
                 widget = widgets[-1] if widgets else None
                 if isinstance(widget, TextViewer):
-                    css = textwrap.dedent("""
-                    <style type="text/css">
-                        tr.header {background: #BBB}
-                        tr.even {background: #CCC}
-                        tr.odd {background: #FFF}
-                    </style>
-                    """).strip()
                     text = "".join(buffers["text"])
                     code = textwrap.dedent(text).strip()
                     html = mistune.Markdown(EvenOddRendered())(code)
-                    print("setHtml <- %s" % html)
-                    widget.setHtml("%s\n%s" % (css, html))
+                    widget.setHtml(html)
             buffers["text"] = []
         elif tag == "label":
             if buffers["label"]:
