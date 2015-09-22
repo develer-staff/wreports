@@ -2,8 +2,9 @@
 # encoding: utf-8
 from __future__ import division, print_function, absolute_import
 
-
 from PyQt4.Qt import *
+
+from parser import TextViewer
 
 __all__ = ["paint_page"]
 
@@ -44,41 +45,41 @@ def paint_pages(printer, pages, unit=QPrinter.DevicePixel):
         if i > 0:
             printer.newPage()
         pictures.append(paint_page(painter, page, printer.pageRect(unit)))
+        for text_viewer in page.findChildren(TextViewer):
+            for num_page in range(1, text_viewer.pageCount()):
+                printer.newPage()
+                text_viewer.setPageNumber(num_page)
+                pictures.append(paint_page(painter, text_viewer, printer.pageRect(unit)))
     painter.end()
     return pictures
 
 def demo(template):
+    import os
+    from os.path import dirname, basename
     import parser
     app = QApplication([])
 
-    def open_dialog(w):
-        import os
-        from os.path import dirname, basename
-        print("Setup printer...")
-        printer = QPrinter(QPrinter.HighResolution)
-        #printer.setOutputFormat(QPrinter.PdfFormat)
-        #printer.setOutputFileName("report.pdf")
-        #printer.setColorMode(QPrinter.Color)
-        #printer.setPaperSize(QPrinter.A4)
-        #printer.setOrientation(QPrinter.Landscape)
+    print("Setup printer...")
+    printer = QPrinter(QPrinter.HighResolution)
+    printer.setOutputFormat(QPrinter.PdfFormat)
+    printer.setOutputFileName("report.pdf")
+    printer.setColorMode(QPrinter.Color)
+    printer.setPaperSize(QPrinter.A4)
+    #printer.setOrientation(QPrinter.Landscape)
 
-        pd = QPrintDialog(printer, w)
-        if pd.exec_() != QDialog.Accepted:
-            return
+    print("Parsing template")
+    template_dir = dirname(template)
+    os.chdir(template_dir)
+    pages = parser.parse(open(basename(template)))
 
-        print("Parsing template")
-        template_dir = dirname(template)
-        os.chdir(template_dir)
-        pages = parser.parse(open(basename(template)))
+    def print_pages(printer):
         paint_pages(printer, pages)
 
-        print("done!")
+    pd = QPrintPreviewDialog(printer)
+    pd.connect(pd, SIGNAL("paintRequested(QPrinter *)"), print_pages)
 
     print("Show print dialog...")
-    w = QPushButton("Click to close")
-    w.connect(w, SIGNAL("clicked(bool)"), w.close)
-    w.show()
-    open_dialog(w)
+    QTimer.singleShot(500, pd.exec_)
     sys.exit(app.exec_())
 
 

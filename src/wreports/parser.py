@@ -169,13 +169,17 @@ class TextViewer(QWidget):
         self._document = QTextDocument(self)
         self._document.setUseDesignMetrics(True)
         self._page_number = 0
+        self.__offset_top = 0
     def document(self):
         return self._document
     def setHtml(self, html):
         self._html = html
         self._updateHtml()
-    def _margin(self):
-        return self.page.height() - self.height()
+    def _offset_top(self):
+        # FIXME the top offset is only on the first page, but this is ugly
+        if self._page_number == 0:
+            self.__offset_top = self.page.height() - self.height()
+        return self.__offset_top
     def _updateHtml(self):
         css = textwrap.dedent("""
         <style type="text/css">
@@ -185,7 +189,8 @@ class TextViewer(QWidget):
             div.markdown {margin-top: %(margin)dpx}
         </style>
         """).strip()
-        css = css % {"margin": self._margin()}
+        # make room for the "header" widgets
+        css = css % {"margin": self._offset_top()}
         print("css = %s" % css)
         html = '%s\n<div class="markdown">%s<span>' % (css, self._html)
         #print("setHtml <- %s" % html)
@@ -193,21 +198,25 @@ class TextViewer(QWidget):
     def resizeEvent(self, resize_event):
         size = self.page.size()
         print("setPageSize <- %s" % size)
-        self._document.setPageSize(QSizeF(size.width(), size.height()))
+        old_size = self._document.pageSize()
+        new_size = QSizeF(size.width(), size.height())
+        self._document.setPageSize(new_size)
         print("self.size = %s" % self.size())
         self._updateHtml()
     def paintEvent(self, paint_event):
         painter = QPainter(self)
         if self._page_number == 0:
-            margin = self._margin()
-            painter.translate(0, -margin)
+            painter.setClipRect(QRectF(0, 0, self.page.width(), self.page.height()-self._offset_top()))
+            painter.translate(0, -self._offset_top())
         else:
-            height = self._document.pageSize().height()
-            painter.translate(0, self._page_number*height)
+            painter.setClipRect(QRectF(0, 0, self.page.width(), self.page.height()))
+            height = self.page.height()
+            painter.translate(0, -self._page_number*height)
         self._document.drawContents(painter)
     def pageCount(self):
         return self._document.pageCount()
     def setPageNumber(self, num):
+        print("setPageNumber <- %s" % num)
         self._page_number = num
         self.update()
     def pageNumber(self):
