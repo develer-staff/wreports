@@ -4,6 +4,7 @@ from __future__ import print_function, absolute_import, division
 
 import xml.parsers.expat
 import types
+import os
 
 from PyQt4.Qt import *
 
@@ -228,7 +229,6 @@ class AspectRatioSvgWidget(QSvgWidget):
             new_rect = QRectF(new_left, new_top, new_width, new_height)
             self.renderer().render(painter, new_rect)
 
-
 def _svg(src,
          widget=None,
          layout=None,
@@ -262,6 +262,8 @@ def _image(src,
     image tag, provide a pointer to a valid image file
     """
     pixmap = QPixmap(src)
+    assert not pixmap.isNull(), "src:'%s' is of an unknown format" % (src)
+
     image = QLabel()
     image.setPixmap(pixmap)
     _set_widget(image,
@@ -306,6 +308,11 @@ def _parse_color(value):
     except:
         raise ValueError("Invalid color %r, provide a valid QColor" % value)
 
+def _parse_src(value):
+    if __debug__:
+        if not os.path.exists(value):
+            raise ValueError("'%s' does not exist" % value)
+
 
 # Entrypoint
 
@@ -333,7 +340,10 @@ def parse(source):
             # parse non string arguments
             for attr in kwargs:
                 if attr in parsers:
-                    kwargs[attr] = parsers[attr](kwargs[attr])
+                    try:
+                        kwargs[attr] = parsers[attr](kwargs[attr])
+                    except ValueError as v:
+                        raise ValueError("error parsing %s: %s" % (attr, v))
 
             if widgets:
                 kwargs["widget"] = widgets[-1]
