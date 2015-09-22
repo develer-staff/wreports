@@ -258,21 +258,21 @@ class AspectRatioSvgWidget(QSvgWidget):
     def paintEvent(self, paint_event):
         painter = QPainter(self)
         view_box = self.renderer().viewBox()
-        default_width, default_height = view_box.width(), view_box.height()
+        svg_width, svg_height = view_box.width(), view_box.height()
         widget_size = self.size()
         widget_width, widget_height = widget_size.width(), widget_size.height()
-        ratio_x = widget_width / default_width
-        ratio_y = widget_height / default_height
+        ratio_x = widget_width / svg_width
+        ratio_y = widget_height / svg_height
+        new_top = 0
+        new_left = 0
+        new_width = widget_width
+        new_height = widget_height
         if ratio_x < ratio_y:
-            new_width = widget_width
-            new_height = widget_width * default_height / default_width
-            new_left = 0
+            new_height = widget_width * svg_height / svg_width
             new_top = (widget_height - new_height) / 2
         else:
-            new_width = widget_height * default_width / default_height
-            new_height = widget_height
+            new_width = widget_height * svg_width / svg_height
             new_left = (widget_width - new_width) / 2
-            new_top = 0
         new_rect = QRectF(new_left, new_top, new_width, new_height)
         self.renderer().render(painter, new_rect)
 
