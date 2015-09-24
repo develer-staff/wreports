@@ -53,7 +53,7 @@ def paint_pages(printer, pages, unit=QPrinter.DevicePixel):
     painter.end()
     return pictures
 
-def demo(template):
+def demo(template, preview=True):
     import os
     from os.path import dirname, basename
     import parser
@@ -67,16 +67,23 @@ def demo(template):
     printer.setPaperSize(QPrinter.A4)
     #printer.setOrientation(QPrinter.Landscape)
 
-    print("Parsing template")
-    template_dir = dirname(template)
-    os.chdir(template_dir)
-    pages = parser.parse(open(basename(template)))
+    def print_pages(requested_printer):
+        print("Parsing template")
+        current_dir = os.getcwd()
+        template_dir = dirname(template)
+        os.chdir(template_dir)
+        pages = parser.parse(open(basename(template)))
+        paint_pages(requested_printer, pages)
+        os.chdir(current_dir)
 
-    def print_pages(printer):
-        paint_pages(printer, pages)
-
-    pd = QPrintPreviewDialog(printer)
-    pd.connect(pd, SIGNAL("paintRequested(QPrinter *)"), print_pages)
+    if preview:
+        pd = QPrintPreviewDialog(printer)
+        pd.connect(pd, SIGNAL("paintRequested(QPrinter *)"), print_pages)
+    else:
+        pd = QPrintDialog(printer)
+        if pd.exec_() != QDialog.Accepted:
+            return
+        print_pages(printer)
 
     print("Show print dialog...")
     QTimer.singleShot(500, pd.exec_)
@@ -89,6 +96,7 @@ if __name__ == '__main__':
     if sys.argv[1:] and os.path.exists(sys.argv[1]):
         template = sys.argv[1]
         print("Parsing template %s" % template)
-        demo(template)
+        preview = "--preview" in sys.argv
+        demo(template, preview)
     else:
-        print("Provide a wreport template")
+        print("Provide a wreport template [--preview]")
