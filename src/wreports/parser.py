@@ -4,8 +4,9 @@ from __future__ import print_function, absolute_import, division
 
 import xml.parsers.expat
 import types
-import os
+import textwrap
 
+import mistune
 from PyQt4.Qt import *
 
 
@@ -46,7 +47,7 @@ def _set_widget(widget,
     if layout is not None:
         layout.addWidget(widget)
     if (horizontal, vertical) is not (None, None):
-        policy = QSizePolicy()
+        policy = widget.sizePolicy()
         if horizontal is not None:
             policy.setHorizontalPolicy(getattr(QSizePolicy, horizontal))
         if vertical is not None:
@@ -79,7 +80,7 @@ def _page(spacing=0,
           child_layout="col"):
     """
     The page is the container of all the page contents, a page contains a
-    default layout
+    default layout (see special handling in `parse` function).
     """
     page = QWidget()
     col_name = name+"_layout" if name is not None else None
@@ -140,14 +141,14 @@ def _row(spacing=0,
     return hlayout
 
 
-def _text(widget=None,
-          layout=None,
-          horizontal="Ignored",
-          vertical="Maximum",
-          name=None,
-          **kwargs):
+def _label(widget=None,
+           layout=None,
+           horizontal="Ignored",
+           vertical="Maximum",
+           name=None,
+           **kwargs):
     """
-    Text in the layout
+    Single line text in the layout
     """
     label = QLabel()
     _set_widget(label,
@@ -158,6 +159,86 @@ def _text(widget=None,
                 name=name,
                 **kwargs)
     return label
+
+
+class TextViewer(QWidget):
+    def __init__(self, page, *args, **kwargs):
+        self.page = page
+        super(TextViewer, self).__init__(*args, **kwargs)
+        self._document = QTextDocument(self)
+        self._document.setUseDesignMetrics(True)
+        self._page_number = 0
+        self.__offset_top = 0
+    def document(self):
+        return self._document
+    def setHtml(self, html):
+        self._html = html
+        self._updateHtml()
+    def _offset_top(self):
+        # FIXME the top offset is only on the first page, but this is ugly
+        if self._page_number == 0:
+            self.__offset_top = self.page.height() - self.height()
+        return self.__offset_top
+    def _updateHtml(self):
+        css = textwrap.dedent("""
+        <style type="text/css">
+            tr.header {background: #BBB}
+            tr.even {background: #CCC}
+            tr.odd {background: #FFF}
+            div.markdown {margin-top: %(margin)dpx}
+        </style>
+        """).strip()
+        # make room for the "header" widgets
+        css = css % {"margin": self._offset_top()}
+        print("css = %s" % css)
+        html = '%s\n<div class="markdown">%s<span>' % (css, self._html)
+        #print("setHtml <- %s" % html)
+        self._document.setHtml(html)
+    def resizeEvent(self, resize_event):
+        size = self.page.size()
+        print("setPageSize <- %s" % size)
+        old_size = self._document.pageSize()
+        new_size = QSizeF(size.width(), size.height())
+        self._document.setPageSize(new_size)
+        print("self.size = %s" % self.size())
+        self._updateHtml()
+    def paintEvent(self, paint_event):
+        painter = QPainter(self)
+        if self._page_number == 0:
+            painter.setClipRect(QRectF(0, 0, self.page.width(), self.page.height()-self._offset_top()))
+            painter.translate(0, -self._offset_top())
+        else:
+            painter.setClipRect(QRectF(0, 0, self.page.width(), self.page.height()))
+            height = self.page.height()
+            painter.translate(0, -self._page_number*height)
+        self._document.drawContents(painter)
+    def pageCount(self):
+        return self._document.pageCount()
+    def setPageNumber(self, num):
+        print("setPageNumber <- %s" % num)
+        self._page_number = num
+        self.update()
+    def pageNumber(self):
+        return self._page_number
+
+def _text(widget=None,
+          layout=None,
+          horizontal="MinimumExpanding",
+          vertical="Maximum",
+          name=None,
+          **kwargs):
+    """
+    Multiline markdown formatted text in the layout
+    """
+    text = TextViewer(widget)
+    _set_widget(text,
+                layout=layout,
+                parent=widget,
+                horizontal=horizontal,
+                vertical=vertical,
+                name=name,
+                **kwargs)
+    return text
 
 
 def _hline(color="black",
@@ -207,27 +288,40 @@ def _vline(color="black",
 
 
 class AspectRatioSvgWidget(QSvgWidget):
+    def __init__(self, *args, **kwargs):
+        super(AspectRatioSvgWidget, self).__init__(*args, **kwargs)
+        policy = self.sizePolicy()
+        policy.setHeightForWidth(True)
+        self.setSizePolicy(policy)
+    def heightForWidth(self, w):
+        return w
     def paintEvent(self, paint_event):
         painter = QPainter(self)
         view_box = self.renderer().viewBox()
+
         default_width, default_height = view_box.width(), view_box.height()
         if default_width > 0 or default_height > 0:
-            widget_size = self.size()
-            widget_width, widget_height = widget_size.width(), widget_size.height()
-            ratio_x = widget_width / default_width
-            ratio_y = widget_height / default_height
-            if ratio_x < ratio_y:
-                new_width = widget_width
-                new_height = widget_width * default_height / default_width
-                new_left = 0
-                new_top = (widget_height - new_height) / 2
-            else:
-                new_width = widget_height * default_width / default_height
-                new_height = widget_height
-                new_left = (widget_width - new_width) / 2
-                new_top = 0
-            new_rect = QRectF(new_left, new_top, new_width, new_height)
-            self.renderer().render(painter, new_rect)
+            print("WARNING: 0x0 image")
+            return
+
+        svg_width, svg_height = view_box.width(), view_box.height()
+        widget_size = self.size()
+        widget_width, widget_height = widget_size.width(), widget_size.height()
+        ratio_x = widget_width / svg_width
+        ratio_y = widget_height / svg_height
+        new_top = 0
+        new_left = 0
+        new_width = widget_width
+        new_height = widget_height
+        if ratio_x < ratio_y:
+            new_height = widget_width * svg_height / svg_width
+            new_top = (widget_height - new_height) / 2
+        else:
+            new_width = widget_height * svg_width / svg_height
+            new_left = (widget_width - new_width) / 2
+        new_rect = QRectF(new_left, new_top, new_width, new_height)
+        self.renderer().render(painter, new_rect)
+
 
 def _svg(src,
          widget=None,
@@ -259,7 +353,7 @@ def _image(src,
            name=None,
            **kwargs):
     """
-    image tag, provide a pointer to a valid image file
+    Image tag, provide a pointer to a valid image file
     """
     pixmap = QPixmap(src)
     assert not pixmap.isNull(), "src:'%s' is of an unknown format" % (src)
@@ -308,11 +402,31 @@ def _parse_color(value):
     except:
         raise ValueError("Invalid color %r, provide a valid QColor" % value)
 
-def _parse_src(value):
-    if __debug__:
+if __debug__:
+    def _parse_src(value):
+        import os
         if not os.path.exists(value):
             raise ValueError("'%s' does not exist" % value)
+        return value
 
+# Markdown helpers
+
+class EvenOddRendered(mistune.Renderer):
+    def __init__(self, *args, **kwargs):
+        super(EvenOddRendered, self).__init__(*args, **kwargs)
+        self._even_odd = False
+    def table(self, header, body):
+        out = super(EvenOddRendered, self).table(header, body)
+        return out.replace("<table>", '<table width="100%">', 1)
+    def table_row(self, content):
+        out = super(EvenOddRendered, self).table_row(content)
+        if content.strip().startswith("<th>"):
+            cls = 'class="header"'
+        else:
+            cls = 'class="even"' if self._even_odd else 'class="odd"'
+            self._even_odd = not self._even_odd
+        out = out.replace("<tr>", "<tr %s>" % cls, 1)
+        return out
 
 # Entrypoint
 
@@ -327,6 +441,7 @@ def parse(source):
     widgets = []
     layouts = []
     pages = []
+    buffers = {"text": [], "label": []}
 
     parsers = {}
     for parser_name in globals():
@@ -377,6 +492,23 @@ def parse(source):
         # print("%s<%s>" % ("  "*len(tags), tag))
         obj = x(tag)(**attrs)
     def end_element(tag):
+        if tag == "text":
+            if buffers["text"]:
+                widget = widgets[-1] if widgets else None
+                if isinstance(widget, TextViewer):
+                    text = "".join(buffers["text"])
+                    code = textwrap.dedent(text).strip()
+                    html = mistune.Markdown(EvenOddRendered())(code)
+                    widget.setHtml(html)
+            buffers["text"] = []
+        elif tag == "label":
+            if buffers["label"]:
+                widget = widgets[-1] if widgets else None
+                if isinstance(widget, QLabel):
+                    text = "".join(buffers["label"])
+                    widget.setText(text.strip())
+            buffers["label"] = []
+
         if tag == "report":
             pass
         elif tag in ("col", "row"):
@@ -390,10 +522,8 @@ def parse(source):
         assert popped_name == tag, (popped_name, tag)
     def char_data(data):
         tag = tags[-1] if tags else None
-        if tag == "text":
-            widget = widgets[-1] if widgets else None
-            if isinstance(widget, QLabel):
-                widget.setText(data.strip())
+        if tag in ("label", "text"):
+            buffers[tag] += [data]
 
     p.StartElementHandler = start_element
     p.EndElementHandler = end_element
