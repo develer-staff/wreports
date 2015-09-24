@@ -298,6 +298,12 @@ class AspectRatioSvgWidget(QSvgWidget):
     def paintEvent(self, paint_event):
         painter = QPainter(self)
         view_box = self.renderer().viewBox()
+
+        default_width, default_height = view_box.width(), view_box.height()
+        if default_width > 0 or default_height > 0:
+            print("WARNING: 0x0 image")
+            return
+
         svg_width, svg_height = view_box.width(), view_box.height()
         widget_size = self.size()
         widget_width, widget_height = widget_size.width(), widget_size.height()
@@ -350,6 +356,8 @@ def _image(src,
     Image tag, provide a pointer to a valid image file
     """
     pixmap = QPixmap(src)
+    assert not pixmap.isNull(), "src:'%s' is of an unknown format" % (src)
+
     image = QLabel()
     image.setPixmap(pixmap)
     _set_widget(image,
@@ -393,6 +401,13 @@ def _parse_color(value):
         return QColor(value)
     except:
         raise ValueError("Invalid color %r, provide a valid QColor" % value)
+
+if __debug__:
+    def _parse_src(value):
+        import os
+        if not os.path.exists(value):
+            raise ValueError("'%s' does not exist" % value)
+        return value
 
 # Markdown helpers
 
@@ -440,7 +455,10 @@ def parse(source):
             # parse non string arguments
             for attr in kwargs:
                 if attr in parsers:
-                    kwargs[attr] = parsers[attr](kwargs[attr])
+                    try:
+                        kwargs[attr] = parsers[attr](kwargs[attr])
+                    except ValueError as v:
+                        raise ValueError("error parsing %s: %s" % (attr, v))
 
             if widgets:
                 kwargs["widget"] = widgets[-1]
