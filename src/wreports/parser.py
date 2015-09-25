@@ -300,7 +300,7 @@ class AspectRatioSvgWidget(QSvgWidget):
         view_box = self.renderer().viewBox()
 
         default_width, default_height = view_box.width(), view_box.height()
-        if default_width > 0 or default_height > 0:
+        if default_width == 0 or default_height == 0:
             print("WARNING: 0x0 image")
             return
 
