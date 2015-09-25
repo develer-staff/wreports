@@ -7,6 +7,9 @@ setup(name='wreports',
       long_description=open('README.rst').read(),
       license='LICENSE.txt',
       keywords="",
+      
+      # dependencies
+      install_requires=['mistune'],
 
       # package source directory
       package_dir={'': 'src'},
