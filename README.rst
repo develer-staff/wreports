@@ -24,3 +24,12 @@ Licence
 
 Contribute
 ------------
+
+
+Suggested git config
+--------------------
+
+- `Git Pull With Automatic Rebase`_
+
+
+.. _`Git Pull With Automatic Rebase`: http://stevenharman.net/git-pull-with-automatic-rebase
