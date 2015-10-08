@@ -75,15 +75,16 @@ def _report(*args, **kwargs):
     pass
 
 
-def _page(spacing=0,
+def _section(spacing=0,
           margins=(0,0,0,0),
           name=None,
           child_layout="col"):
     """
-    The page is the container of all the page contents, a page contains a
-    default layout (see special handling in `parse` function).
+    Section is a container of contents of the same context, a section contains
+    a default layout (see special handling in `parse` function).
+    Section start in a new page and continue until all contents are written.
     """
-    page = QWidget()
+    section = QWidget()
     col_name = name+"_layout" if name is not None else None
     layouts = {"col": _col, "row": _row}
     try:
@@ -91,8 +92,8 @@ def _page(spacing=0,
     except KeyError:
         msg = "Invalid value %r for `child_layout`, use %s"
         raise ValueError(msg % (child_layout, "|".join(layouts.keys())))
-    _layout(spacing=spacing, margins=margins, name=col_name, widget=page)
-    return page
+    _layout(spacing=spacing, margins=margins, name=col_name, widget=section)
+    return section
 
 
 def _col(spacing=0,
@@ -479,7 +480,7 @@ def parse(source):
             elif tag in ("col", "row"):
                 layouts.append(obj)
             else:
-                if tag == "page":
+                if tag == "section":
                     pages.append(obj)
                     layouts.append(obj.layout())
                 widgets.append(obj)
@@ -512,7 +513,7 @@ def parse(source):
         elif tag in ("col", "row"):
             layouts.pop()
         else:
-            if tag == "page":
+            if tag == "section":
                 layouts.pop()
             widgets.pop()
         # print("%s</%s>" % ("  "*len(tags), tag))
