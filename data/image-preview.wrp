@@ -1,8 +1,8 @@
 <?xml version = "1.0" encoding="utf-8" standalone="yes"?>
 <!DOCTYPE report [
-  <!ELEMENT report (page)*>
-  <!ELEMENT page (row|col|label|text|image|svg|vline|hline)*>
-  <!ATTLIST page
+  <!ELEMENT report (section)*>
+  <!ELEMENT section (row|col|label|text|image|svg|vline|hline)*>
+  <!ATTLIST section
             name CDATA #IMPLIED
             child_layout (col|row) "col">
   <!ELEMENT row (row|col|label|text|image|svg|vline|hline)*>
@@ -53,7 +53,7 @@
             horizontal (Minimum|Maximum|Preferred|MinimumExpanding|Expanding|Ignored) "MinimumExpanding">
   ]>
 <report>
-  <page name="page1">
+  <section name="section1">
     <row name="row_layout">
       <col name="image_layout">
         <row name="header_layout" margins="(5,5,5,5)" spacing="5">
@@ -97,8 +97,8 @@
         <hline color="black" />
       </col>
     </row>
-  </page>
-  <page name="page1">
+  </section>
+  <section name="section2">
     <row name="row_layout">
       <col name="image_layout">
         <row name="header_layout" margins="(5,5,5,5)" spacing="5">
@@ -185,5 +185,5 @@
         <hline color="black" />
       </col>
     </row>
-  </page>
+  </section>
 </report>
