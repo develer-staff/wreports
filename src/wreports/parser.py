@@ -26,7 +26,8 @@ def _set_layout(layout,
                 spacing=None,
                 margins=None,
                 parent_layout=None,
-                **kwargs):
+                alignment=None,
+                *args, **kwargs):
     if widget is not None:
         if widget.layout() is None:
             widget.setLayout(layout)
@@ -36,7 +37,9 @@ def _set_layout(layout,
         layout.setSpacing(spacing)
     if parent_layout is not None:
         parent_layout.addLayout(layout)
-    _set_object(layout, **kwargs)
+    if alignment is not None:
+        layout.setAlignment(getattr(Qt, alignment))
+    _set_object(layout, *args, **kwargs)
     return layout
 
 def _set_widget(widget,
@@ -44,9 +47,11 @@ def _set_widget(widget,
                 horizontal=None,
                 vertical=None,
                 size=None,
-                **kwargs):
+                alignment=None,
+                *args, **kwargs):
     if layout is not None:
-        layout.addWidget(widget)
+        alignment = getattr(Qt, alignment) if alignment else Qt.Alignment(0)
+        layout.addWidget(widget, alignment=alignment)
     if (horizontal, vertical) is not (None, None):
         policy = widget.sizePolicy()
         if horizontal is not None:
@@ -61,7 +66,7 @@ def _set_widget(widget,
         widget.setMinimumSize(qsize)
         widget.setMaximumSize(qsize)
     widget.updateGeometry()
-    _set_object(widget, **kwargs)
+    _set_object(widget, *args, **kwargs)
 
 # Tag function, called for each _<tag> found
 
@@ -100,7 +105,9 @@ def _col(spacing=0,
          margins=(0,0,0,0),
          name=None,
          widget=None,
-         layout=None):
+         layout=None,
+         *args,
+         **kwargs):
     """
     Vertical layout, with some defaults better suited to printed output.
     There are no tables (yet) in this markup, so nest more col|row layouts to
@@ -121,7 +128,9 @@ def _col(spacing=0,
                 spacing=spacing,
                 margins=margins,
                 name=name,
-                parent_layout=layout)
+                parent_layout=layout,
+                *args,
+                **kwargs)
     return vlayout
 
 
@@ -129,7 +138,9 @@ def _row(spacing=0,
          margins=(0,0,0,0),
          name=None,
          widget=None,
-         layout=None):
+         layout=None,
+         *args,
+         **kwargs):
     """
     Horizontal layout, see _col for details
     """
@@ -139,7 +150,9 @@ def _row(spacing=0,
                 spacing=spacing,
                 margins=margins,
                 name=name,
-                parent_layout=layout)
+                parent_layout=layout,
+                *args,
+                **kwargs)
     return hlayout
 
 
