@@ -20,11 +20,11 @@ def paint_page(painter, page, page_rect):
     # results in a raster image in the pdf
     page_pic = QPicture()
     wpainter = QPainter(page_pic)
-    pdevice = painter.device()
-    wdevice = wpainter.device()
-    ratioX = pdevice.physicalDpiX() / wdevice.physicalDpiX()
-    ratioY = pdevice.physicalDpiY() / wdevice.physicalDpiY()
-    page.resize(page_rect.width()/ratioX, page_rect.height()/ratioY)
+
+    # set the BoundingRect of page_pic and the page size to page_rect
+    page_pic.setBoundingRect(page_rect.toRect())
+    page.resize(page_rect.toRect().width(), page_rect.toRect().height())
+
     page.render(wpainter, flags=QWidget.DrawChildren)
     wpainter.end()
     painter.drawPicture(0, 0, page_pic)
@@ -52,6 +52,7 @@ def paint_pages(printer, pages, unit=QPrinter.DevicePixel):
                 pictures.append(paint_page(painter, text_viewer, printer.pageRect(unit)))
     painter.end()
     return pictures
+
 
 def demo(template, preview=True):
     import os
