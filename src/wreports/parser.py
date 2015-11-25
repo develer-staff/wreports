@@ -83,7 +83,8 @@ def _report(*args, **kwargs):
 def _section(spacing=0,
           margins=(0,0,0,0),
           name=None,
-          child_layout="col"):
+          child_layout="col",
+          metadata=None):
     """
     Section is a container of contents of the same context, a section contains
     a default layout (see special handling in `parse` function).
@@ -92,6 +93,7 @@ def _section(spacing=0,
     section = QWidget()
     col_name = name+"_layout" if name is not None else None
     layouts = {"col": _col, "row": _row}
+    section.metadata = metadata
     try:
         _layout = layouts[child_layout]
     except KeyError:
