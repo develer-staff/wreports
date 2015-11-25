@@ -61,7 +61,8 @@ def demo(template, preview=True):
     app = QApplication([])
 
     print("Setup printer...")
-    printer = QPrinter(QPrinter.HighResolution)
+    # FIXME: investigate why QPrinter.HighResolution doesn't work as expected
+    printer = QPrinter()
     printer.setOutputFormat(QPrinter.PdfFormat)
     printer.setOutputFileName("report.pdf")
     printer.setColorMode(QPrinter.Color)
