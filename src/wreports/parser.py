@@ -2,6 +2,7 @@
 # encoding: utf-8
 from __future__ import print_function, absolute_import, division
 
+import re
 import xml.parsers.expat
 import types
 import textwrap
@@ -14,7 +15,7 @@ __all__ = ["parse"]
 
 # Helper functions to apply attributes to qwidgets
 
-def _set_object(obj, parent=None, name=None):
+def _set_object(obj, parent=None, name=None, env=None):
     if parent is not None:
         obj.setParent(parent)
     if name is not None:
@@ -304,11 +305,29 @@ def _vline(color="black",
 
 
 class AspectRatioSvgWidget(QSvgWidget):
-    def __init__(self, *args, **kwargs):
+    def __init__(self, src, env, *args, **kwargs):
         super(AspectRatioSvgWidget, self).__init__(*args, **kwargs)
         policy = self.sizePolicy()
         policy.setHeightForWidth(True)
         self.setSizePolicy(policy)
+        if src.startswith("data://"):
+            if env is None:
+                raise ValueError("Cannot use data:// without `env`")
+            multikey = src[len("data://"):]
+            keys = multikey.split(":")
+            # data://preview:ID -> env["preview"][ID]
+            data = env
+            for key in keys:
+                try:
+                    data = data[key]
+                except KeyError as err:
+                    raise KeyError("%s: parsing %s" % (err, src))
+            self.load(QByteArray(data))
+        else:
+            self.load(src)
+        if not self.renderer().isValid():
+            raise ValueError("Invalid svg in %s" % src)
+
     def heightForWidth(self, w):
         return w
     def paintEvent(self, paint_event):
@@ -349,7 +368,7 @@ def _svg(src,
     """
     Svg tag, provide a pointer to a valid svg file
     """
-    svg = AspectRatioSvgWidget(src)
+    svg = AspectRatioSvgWidget(src, kwargs["env"])
     _set_widget(svg,
                 layout=layout,
                 parent=widget,
@@ -420,9 +439,15 @@ def _parse_color(value):
 
 if __debug__:
     def _parse_src(value):
-        import os
-        if not os.path.exists(value):
-            raise ValueError("'%s' does not exist" % value)
+        if value.startswith("data://"):
+            # postpone check, needs `env`
+            # FIXME: spostare il check qua invece che in AspectRatioSvgWidget?
+            # se lo converto qua in QByteArray nella classe faccio sempre solo la load
+            pass
+        else:
+            import os
+            if not os.path.exists(value):
+                raise ValueError("File '%s' does not exist" % value)
         return value
 
 # Markdown helpers
@@ -446,7 +471,7 @@ class EvenOddRendered(mistune.Renderer):
 
 # Entrypoint
 
-def parse(source):
+def parse(source, env=None):
     p = xml.parsers.expat.ParserCreate()
     if isinstance(source, types.StringTypes):
         _parse = p.Parse
@@ -480,6 +505,9 @@ def parse(source):
                 kwargs["widget"] = widgets[-1]
             if layouts:
                 kwargs["layout"] = layouts[-1]
+
+            if tag == "svg":
+                kwargs["env"] = env
 
             # def nfw(w):
             #     if isinstance(w, QObject):
