@@ -209,7 +209,7 @@ class TextViewer(QWidget):
         css = css % {"margin": self._offset_top()}
         print("css = %s" % css)
         html = '%s\n<div class="markdown">%s<span>' % (css, self._html)
-        #print("setHtml <- %s" % html)
+        # print("setHtml <- %s" % html)
         self._document.setHtml(html)
     def resizeEvent(self, resize_event):
         size = self.page.size()
