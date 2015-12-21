@@ -13,6 +13,7 @@ from .pyqt_version import *
 
 if PYQT_VERSION == PYQt4:
     from PyQt4.Qt import *
+    from PyQt4.QtSvg import QSvgWidget
 else:
     from PyQt5.QtCore import *
     from PyQt5.QtGui import *
