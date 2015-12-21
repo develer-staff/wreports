@@ -80,7 +80,7 @@ def demo(template, preview=True):
 
     if preview:
         pd = QPrintPreviewDialog(printer)
-        pd.connect(pd, SIGNAL("paintRequested(QPrinter *)"), print_pages)
+        pd.paintRequested.connect(print_pages)
     else:
         pd = QPrintDialog(printer)
         if pd.exec_() != QDialog.Accepted:
