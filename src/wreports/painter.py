@@ -2,9 +2,15 @@
 # encoding: utf-8
 from __future__ import division, print_function, absolute_import
 
-from PyQt4.Qt import *
-
+from .pyqt_version import *
 from .parser import TextViewer
+
+if PYQT_VERSION == PYQt4:
+    from PyQt4.Qt import *
+else:
+    from PyQt5.QtGui import QPicture, QPainter
+    from PyQt5.QtPrintSupport import QPrinter, QPrintDialog, QPrintPreviewDialog
+    from PyQt5.QtCore import QTimer
 
 __all__ = ["paint_page"]
 
