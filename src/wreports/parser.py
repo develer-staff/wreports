@@ -8,7 +8,15 @@ import types
 import textwrap
 
 import mistune
-from PyQt4.Qt import *
+
+from .pyqt_version import *
+
+if PYQT_VERSION == PYQt4:
+    from PyQt4.Qt import *
+else:
+    from PyQt5.QtCore import *
+    from PyQt5.QtGui import *
+    from PyQt5.QtWidgets import *
 
 
 __all__ = ["parse"]
