@@ -4,7 +4,7 @@ from __future__ import division, print_function, absolute_import
 
 from PyQt4.Qt import *
 
-from parser import TextViewer
+from .parser import TextViewer
 
 __all__ = ["paint_page"]
 
