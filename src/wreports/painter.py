@@ -11,6 +11,7 @@ else:
     from PyQt5.QtGui import QPicture, QPainter
     from PyQt5.QtPrintSupport import QPrinter, QPrintDialog, QPrintPreviewDialog
     from PyQt5.QtCore import QTimer
+    from PyQt5.QtWidgets import QWidget
 
 __all__ = ["paint_page"]
 
