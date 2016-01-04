@@ -14,8 +14,8 @@ Or add:
 
 .. code::
 
-    git+ssh://git@gitlab.com/***REMOVED***/wreports.git
-    
+    https://gitlab.com/develer/wreports.git
+
 to your ``requirements.txt``.
 
 Licence
