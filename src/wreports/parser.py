@@ -2,7 +2,6 @@
 # encoding: utf-8
 from __future__ import print_function, absolute_import, division
 
-import re
 import xml.parsers.expat
 import types
 import os
@@ -10,16 +9,19 @@ import textwrap
 
 import mistune
 
-from .pyqt_version import *
-
-if PYQT_VERSION == PYQt4:
-    from PyQt4.Qt import *
-    from PyQt4.QtSvg import QSvgWidget
-else:
-    from PyQt5.QtCore import *
-    from PyQt5.QtGui import *
-    from PyQt5.QtWidgets import *
+try:
+    from PyQt5.Qt import Qt
+    from PyQt5.QtCore import (QSize, QSizeF, QByteArray, QRectF)
+    from PyQt5.QtGui import (QVBoxLayout, QHBoxLayout, QSizePolicy, QPixmap, QPainter,
+                             QColor, QApplication)
+    from PyQt5.QtWidgets import (QWidget, QLabel, QTextDocument, QFrame)
     from PyQt5.QtSvg import QSvgWidget
+except ImportError:
+    from PyQt4.Qt import Qt
+    from PyQt4.QtCore import (QSize, QSizeF, QByteArray, QRectF)
+    from PyQt4.QtGui import (QVBoxLayout, QHBoxLayout, QSizePolicy, QPixmap, QPainter,
+                             QColor, QApplication, QWidget, QLabel, QTextDocument, QFrame)
+    from PyQt4.QtSvg import QSvgWidget
 
 
 __all__ = ["parse"]
