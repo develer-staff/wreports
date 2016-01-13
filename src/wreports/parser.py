@@ -9,12 +9,14 @@ import textwrap
 import mistune
 
 try:
+    from PyQt5.Qt import Qt
     from PyQt5.QtCore import (QSize, QSizeF, QByteArray, QRectF)
     from PyQt5.QtGui import (QPixmap, QPainter, QColor, QTextDocument)
     from PyQt5.QtWidgets import (QVBoxLayout, QHBoxLayout, QWidget, QLabel, QFrame,
                              QSizePolicy, QApplication)
     from PyQt5.QtSvg import QSvgWidget
 except ImportError:
+    from PyQt4.Qt import Qt
     from PyQt4.QtCore import (QSize, QSizeF, QByteArray, QRectF)
     from PyQt4.QtGui import (QVBoxLayout, QHBoxLayout, QSizePolicy, QPixmap, QPainter,
                              QColor, QApplication, QWidget, QLabel, QTextDocument, QFrame)
