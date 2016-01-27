@@ -2,13 +2,25 @@
 # encoding: utf-8
 from __future__ import print_function, absolute_import, division
 
-import re
 import xml.parsers.expat
 import types
 import textwrap
 
 import mistune
-from PyQt4.Qt import *
+
+try:
+    from PyQt5.Qt import Qt
+    from PyQt5.QtCore import (QSize, QSizeF, QByteArray, QRectF)
+    from PyQt5.QtGui import (QPixmap, QPainter, QColor, QTextDocument)
+    from PyQt5.QtWidgets import (QVBoxLayout, QHBoxLayout, QWidget, QLabel, QFrame,
+                             QSizePolicy, QApplication)
+    from PyQt5.QtSvg import QSvgWidget
+except ImportError:
+    from PyQt4.Qt import Qt
+    from PyQt4.QtCore import (QSize, QSizeF, QByteArray, QRectF)
+    from PyQt4.QtGui import (QVBoxLayout, QHBoxLayout, QSizePolicy, QPixmap, QPainter,
+                             QColor, QApplication, QWidget, QLabel, QTextDocument, QFrame)
+    from PyQt4.QtSvg import QSvgWidget
 
 
 __all__ = ["parse"]
@@ -213,11 +225,11 @@ class TextViewer(QWidget):
         self._document.setHtml(html)
     def resizeEvent(self, resize_event):
         size = self.page.size()
-        print("setPageSize <- %s" % size)
-        old_size = self._document.pageSize()
+        #print("setPageSize <- %s" % size)
+        #old_size = self._document.pageSize()
         new_size = QSizeF(size.width(), size.height())
         self._document.setPageSize(new_size)
-        print("self.size = %s" % self.size())
+        #print("self.size = %s" % self.size())
         self._updateHtml()
     def paintEvent(self, paint_event):
         painter = QPainter(self)
@@ -534,7 +546,8 @@ def parse(source, env=None):
     def start_element(tag, attrs):
         tags.append(tag)
         # print("%s<%s>" % ("  "*len(tags), tag))
-        obj = x(tag)(**attrs)
+        x(tag)(**attrs)
+
     def end_element(tag):
         if tag == "text":
             if buffers["text"]:
@@ -564,6 +577,7 @@ def parse(source, env=None):
         # print("%s</%s>" % ("  "*len(tags), tag))
         popped_name = tags.pop()
         assert popped_name == tag, (popped_name, tag)
+
     def char_data(data):
         tag = tags[-1] if tags else None
         if tag in ("label", "text"):

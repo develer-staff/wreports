@@ -2,9 +2,15 @@
 # encoding: utf-8
 from __future__ import division, print_function, absolute_import
 
-from PyQt4.Qt import *
+from .parser import TextViewer
 
-from parser import TextViewer
+try:
+    from PyQt5.QtGui import QPicture, QPainter
+    from PyQt5.QtPrintSupport import QPrinter, QPrintDialog, QPrintPreviewDialog
+    from PyQt5.QtCore import QTimer
+    from PyQt5.QtWidgets import QWidget
+except ImportError:
+    from PyQt4.Qt import *
 
 __all__ = ["paint_page"]
 
@@ -80,7 +86,7 @@ def demo(template, preview=True):
 
     if preview:
         pd = QPrintPreviewDialog(printer)
-        pd.connect(pd, SIGNAL("paintRequested(QPrinter *)"), print_pages)
+        pd.paintRequested.connect(print_pages)
     else:
         pd = QPrintDialog(printer)
         if pd.exec_() != QDialog.Accepted:
