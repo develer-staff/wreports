@@ -1,0 +1,136 @@
+
+============================================ WIDGETS =======================================================
+
+<report>
+    - Document root, simply a container of pages
+
+  - puo' contenere: section
+
+
+<section>
+    - Section is a container of contents of the same context, a section contains
+      a default layout.
+      Section start in a new page and continue until all contents are written.
+
+  - valori settabili:
+    spacing=0,        http://doc.qt.io/qt-4.8/qlayout.html#spacing-prop
+    margins=(0,0,0,0),    http://doc.qt.io/qt-4.8/qlayout.html#setContentsMargins
+    child_layout="col",   layout che contiene la sezione "col" (verticale) o "row" (orizzontale)
+    metadata=None     campo opzionale per dati aggiuntivi
+
+  - puo' contenere: row|col|text|image|svg|vline|hline
+
+
+<label>
+  - Single line text in the layout
+
+  - valori settabili:
+    horizontal="Ignored", http://doc.qt.io/qt-4.8/qsizepolicy.html#Policy-enum
+    vertical="Maximum",   dalla tabella vediamo che i valori settabili per questi due attributi sono
+                Fixed, Minimum, Maximum, Preferred, Expanding, MinimumExpanding, Ignored
+
+
+<vline><hline>
+  - Vertical and Horizontal lines
+
+  - valori settabili:
+    line_width=1      spessore della linea
+
+
+<svg>
+  - Svg tag
+
+  - valori settabili:
+    src,              path del file svg su disco o "data://<stringa contentente l'svg>"
+    horizontal="Preferred",     http://doc.qt.io/qt-4.8/qsizepolicy.html#Policy-enum
+    vertical="MinimumExpanding",  dalla tabella vediamo che i valori settabili per questi due attributi sono
+                    Fixed, Minimum, Maximum, Preferred, Expanding, MinimumExpanding, Ignored
+ex: <svg src="c:\Documenti\Immagini\immagine.svg" />
+  <svg src="data://<svg width="400" height="110">  <rect width="300" height="100" style="fill:rgb(0,0,255);stroke width:3;stroke:rgb(0,0,0)" />
+</svg>"
+
+<image>
+  - image tag
+
+  - valori settabili:
+    src,              path dell'immagine su disco
+    horizontal="Preferred",     http://doc.qt.io/qt-4.8/qsizepolicy.html#Policy-enum
+    vertical="MinimumExpanding",  dalla tabella vediamo che i valori settabili per questi due attributi sono
+                    Fixed, Minimum, Maximum, Preferred, Expanding, MinimumExpanding, Ignored
+ex: <image src="c:\Documenti\Immagini\immagine.png" />
+
+
+<text>
+  - Multiline markdown formatted text in the layout
+
+  - valori settabili:
+    horizontal="MinimumExpanding",
+    vertical="Maximum"
+
+ex:
+<text>
+      |   col1   |   col2   |
+      |:--------:|:--------:|
+      |   row1   |   row1   |
+      |   row2   |   row2   |
+      |   row3   |   row3   |
+</text>
+
+
+============================================ LAYOUT ====================================================
+
+<col><row>
+  - Vertical and Horizontal layout
+
+  - valori settabili:
+    spacing=0,        http://doc.qt.io/qt-4.8/qlayout.html#spacing-prop
+    margins=(0,0,0,0),    http://doc.qt.io/qt-4.8/qlayout.html#setContentsMargins
+
+  - puo' contenere: row|col|text|image|svg|vline|hline
+
+
+
+============================================ EXAMPLE ====================================================
+
+<report>
+  <section name="section1">
+    <row name="row_layout">
+      <col name="image_layout">
+        <row name="header_layout" margins="(5,5,5,5)" spacing="5">
+          <label horizontal="Ignored" name="col1">Some text</label>
+          <vline color="black" />
+          <label horizontal="Ignored" name="col2">Other text</label>
+        </row>
+        <hline color="black" />
+        <row name="footer_layout" margins="(5,5,5,5)">
+          <label horizontal="Ignored" name="footer">Footer</label>
+        </row>
+        <hline color="black" />
+      </col>
+      <vline/>
+    </row>
+    <text>
+      |   si    |   no    |
+      |:-------:|:--- ---:|
+      |   001   |   099   |
+      |   002   |   098   |
+      |   003   |   097   |
+      |   004   |   096   |
+      |   005   |   095   |
+    </text>
+    </section>
+    <section>
+        <row margins="(5,5,5,5)" spacing="5">
+          <label horizontal="Ignored">Some text</label>
+          <vline color="black" />
+          <label horizontal="Ignored">Other text</label>
+          <svg src=""/>
+        </row>
+        <hline/>
+        <row margins="(5,5,5,5)">
+          <label horizontal="Ignored">Footer</label>
+        </row>
+        <svg src="data://<svg width="400" height="110">  <rect width="300" height="100" style="fill:rgb(0,0,255);stroke width:3;stroke:rgb(0,0,0)" />
+        <hline/>
+  </section>
+</report>
