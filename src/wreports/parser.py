@@ -60,14 +60,17 @@ def _set_widget(widget,
                 vertical=None,
                 size=None,
                 alignment=None,
+                hstretch=10,
                 *args, **kwargs):
     if layout is not None:
         alignment = getattr(Qt, alignment) if alignment else Qt.Alignment(0)
         layout.addWidget(widget, alignment=alignment)
-    if (horizontal, vertical) is not (None, None):
+    if (horizontal, vertical, hstretch) is not (None, None, None):
         policy = widget.sizePolicy()
         if horizontal is not None:
             policy.setHorizontalPolicy(getattr(QSizePolicy, horizontal))
+        if hstretch is not None:
+            policy.setHorizontalStretch(int(hstretch))
         if vertical is not None:
             policy.setVerticalPolicy(getattr(QSizePolicy, vertical))
         widget.setSizePolicy(policy)
