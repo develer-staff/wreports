@@ -405,8 +405,6 @@ def _svg(src,
 def _image(src,
            widget=None,
            layout=None,
-           width=None,
-           height=None,
            horizontal="Preferred",
            vertical="MinimumExpanding",
            name=None,
@@ -415,12 +413,6 @@ def _image(src,
     Image tag, provide a pointer to a valid image file
     """
     pixmap = QPixmap(src)
-    if width is None and height is not None:
-        pixmap = pixmap.scaled(int(width), int(height))
-    elif width is not None:
-        pixmap = pixmap.scaledToWidth(int(width))
-    elif height is not None:
-        pixmap = pixmap.scaledToHieght(int(height))
     assert not pixmap.isNull(), "src:'%s' is of an unknown format" % (src)
 
     image = QLabel()
