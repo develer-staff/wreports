@@ -62,7 +62,10 @@ def _set_widget(widget,
                 size=None,
                 alignment=None,
                 hstretch=10,
+                style=None,
                 *args, **kwargs):
+    if style is not None:
+        widget.setStyleSheet("* {%s}" % style)
     if layout is not None:
         alignment = getattr(Qt, alignment) if alignment else Qt.Alignment(0)
         layout.addWidget(widget, alignment=alignment)
@@ -100,6 +103,7 @@ def _section(spacing=0,
           margins=(0,0,0,0),
           name=None,
           child_layout="col",
+          style="font-size: 10pt",
           metadata=None):
     """
     Section is a container of contents of the same context, a section contains
@@ -107,6 +111,7 @@ def _section(spacing=0,
     Section start in a new page and continue until all contents are written.
     """
     section = QWidget()
+    section.setStyleSheet("* {%s}" % style)
     col_name = name+"_layout" if name is not None else None
     layouts = {"col": _col, "row": _row}
     section.metadata = metadata
@@ -197,6 +202,7 @@ def _label(widget=None,
 class TextViewer(QWidget):
     def __init__(self, page, *args, **kwargs):
         self.page = page
+
         super(TextViewer, self).__init__(*args, **kwargs)
         self._document = QTextDocument(self)
         self._document.setUseDesignMetrics(True)
@@ -226,6 +232,7 @@ class TextViewer(QWidget):
         print("css = %s" % css)
         html = '%s\n<div class="markdown">%s<span>' % (css, self._html)
         # print("setHtml <- %s" % html)
+        self._document.setDefaultFont(self.font())
         self._document.setHtml(html)
     def resizeEvent(self, resize_event):
         size = self.page.size()
@@ -577,7 +584,8 @@ def parse(source, env=None):
             if buffers["label"]:
                 widget = widgets[-1] if widgets else None
                 if isinstance(widget, QLabel):
-                    text = "".join(buffers["label"])
+                    text = "".join(buffers["label"]).strip()
+                    text = mistune.markdown(text)
                     widget.setText(text.strip())
             buffers["label"] = []
 
