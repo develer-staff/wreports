@@ -183,12 +183,15 @@ def _label(widget=None,
            layout=None,
            horizontal="Ignored",
            vertical="Maximum",
+           word_wrap="False",
            name=None,
            **kwargs):
     """
     Single line text in the layout
     """
     label = QLabel()
+    word_wrap = word_wrap == "True"
+    label.setWordWrap(word_wrap)
     _set_widget(label,
                 layout=layout,
                 parent=widget,
