@@ -9,7 +9,8 @@ setup(name='wreports',
       keywords="qt, report",
 
       # dependencies
-      install_requires=['mistune'],
+      install_requires=['mistune',
+                        'bbcode'],
 
       # package source directory
       package_dir={'': 'src'},
