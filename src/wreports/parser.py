@@ -7,6 +7,7 @@ import types
 import os
 import textwrap
 
+import bbcode
 import mistune
 
 try:
@@ -579,6 +580,10 @@ def parse(source, env=None):
                 widget = widgets[-1] if widgets else None
                 if isinstance(widget, TextViewer):
                     text = "".join(buffers["text"])
+                    # default bbcode parser change \n with <br> we force it to \n to avoid changes
+                    # 'raplace_cosmetic' change symbols into ascii code for html and we don't want that too
+                    bbcode.g_parser = bbcode.Parser(newline='\n', replace_cosmetic=False)
+                    text = bbcode.render_html(text)
                     code = textwrap.dedent(text).strip()
                     html = mistune.Markdown(EvenOddRendered())(code)
                     widget.setHtml(html)
