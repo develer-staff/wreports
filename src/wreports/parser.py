@@ -394,7 +394,20 @@ def _svg(src,
     """
     Svg tag, provide a pointer to a valid svg file
     """
-    svg = AspectRatioSvgWidget(src, kwargs["env"])
+    try:
+        svg = AspectRatioSvgWidget(src, kwargs["env"])
+    except (KeyError, ValueError) as e:
+        print(type(e), e)
+        error_svg = """
+                    <svg>
+                    <rect width="100%" height="100%" fill='white' stroke="black" stroke-width="1"/>
+                    <text fill="red" font-size="8" font-family="Verdana" x="30%" y="45%">
+                    Error: Missing svg
+                    </text>
+                    </svg>"""
+        svg = QSvgWidget()
+        svg.load(QByteArray(error_svg))
+
     _set_widget(svg,
                 layout=layout,
                 parent=widget,
@@ -428,7 +441,11 @@ def _image(src,
     assert not pixmap.isNull(), "src:'%s' is of an unknown format" % (src)
 
     image = QLabel()
-    image.setPixmap(pixmap)
+    if pixmap.isNull():
+        import os
+        image.setText(os.path.basename(src))
+    else:
+        image.setPixmap(pixmap)
     _set_widget(image,
                 layout=layout,
                 parent=widget,
