@@ -299,6 +299,12 @@ class AspectRatioSvgWidget(QSvgWidget):
     def paintEvent(self, paint_event):
         painter = QPainter(self)
         view_box = self.renderer().viewBox()
+
+        default_width, default_height = view_box.width(), view_box.height()
+        if default_width == 0 or default_height == 0:
+            print("WARNING: 0x0 image")
+            return
+
         svg_width, svg_height = view_box.width(), view_box.height()
         widget_size = self.size()
         widget_width, widget_height = widget_size.width(), widget_size.height()
