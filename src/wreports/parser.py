@@ -40,6 +40,7 @@ def _set_layout(layout,
                 margins=None,
                 parent_layout=None,
                 alignment=None,
+                stretch=10,
                 *args, **kwargs):
     if widget is not None:
         if widget.layout() is None:
@@ -50,6 +51,7 @@ def _set_layout(layout,
         layout.setSpacing(spacing)
     if parent_layout is not None:
         parent_layout.addLayout(layout)
+        parent_layout.setStretchFactor(layout, int(stretch))
     if alignment is not None:
         layout.setAlignment(getattr(Qt, alignment))
     _set_object(layout, *args, **kwargs)
