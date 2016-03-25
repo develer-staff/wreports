@@ -4,6 +4,7 @@ from __future__ import print_function, absolute_import, division
 
 import xml.parsers.expat
 import types
+import os
 import textwrap
 
 import bbcode
@@ -489,6 +490,11 @@ def _parse_color(value):
         return QColor(value)
     except:
         raise ValueError("Invalid color %r, provide a valid QColor" % value)
+
+def _parse_src(value):
+    if __debug__:
+        if not os.path.exists(value):
+            raise ValueError("'%s' does not exist" % value)
 
 if __debug__:
     def _parse_src(value):
