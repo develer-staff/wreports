@@ -497,11 +497,6 @@ def _parse_color(value, line):
     except:
         raise errors.ParseError("Invalid color %r at line %s, provide a valid QColor" % (value, line))
 
-def _parse_src(value, line):
-    if __debug__:
-        if not os.path.exists(value):
-            raise errors.ParseError("'%s' at line %s does not exist" % (value, line))
-
 if __debug__:
     def _parse_src(value, line):
         if value.startswith("data://"):
@@ -512,7 +507,7 @@ if __debug__:
         else:
             import os
             if not os.path.exists(value):
-                raise errors.ParseError("File '%s' does not exist" % value)
+                print("'%s' at line %s does not exist" % (value, line))
         return value
 
 # Markdown helpers
