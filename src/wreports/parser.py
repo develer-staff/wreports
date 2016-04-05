@@ -107,7 +107,8 @@ def _section(spacing=0,
           name=None,
           child_layout="col",
           style="font-size: 10pt",
-          metadata=None):
+          metadata=None,
+          **kwargs):
     """
     Section is a container of contents of the same context, a section contains
     a default layout (see special handling in `parse` function).
@@ -129,7 +130,7 @@ def _section(spacing=0,
 
 def _col(spacing=0,
          margins=(0,0,0,0),
-         name=None,
+         name="col",
          widget=None,
          layout=None,
          **kwargs):
@@ -160,7 +161,7 @@ def _col(spacing=0,
 
 def _row(spacing=0,
          margins=(0,0,0,0),
-         name=None,
+         name="row",
          widget=None,
          layout=None,
          **kwargs):
@@ -184,7 +185,7 @@ def _label(widget=None,
            horizontal="Ignored",
            vertical="Maximum",
            word_wrap="False",
-           name=None,
+           name="label",
            **kwargs):
     """
     Single line text in the layout
@@ -268,7 +269,7 @@ def _text(widget=None,
           layout=None,
           horizontal="MinimumExpanding",
           vertical="Maximum",
-          name=None,
+          name="text",
           **kwargs):
     """
     Multiline markdown formatted text in the layout
@@ -288,7 +289,7 @@ def _hline(color="black",
            widget=None,
            layout=None,
            line_width=1,
-           name=None,
+           name="hline",
            **kwargs):
     """
     Horizontal line
@@ -311,7 +312,7 @@ def _vline(color="black",
            widget=None,
            layout=None,
            line_width=1,
-           name=None,
+           name="vline",
            **kwargs):
     """
     Vertical line
@@ -389,7 +390,7 @@ def _svg(src,
          layout=None,
          horizontal="Preferred",
          vertical="MinimumExpanding",
-         name=None,
+         name="svg",
          **kwargs):
     """
     Svg tag, provide a pointer to a valid svg file
@@ -419,14 +420,14 @@ def _svg(src,
     return svg
 
 
-def _image(src,
+def _image(src="",
            widget=None,
            layout=None,
            width=None,
            height=None,
            horizontal="Preferred",
            vertical="MinimumExpanding",
-           name=None,
+           name="image",
            **kwargs):
     """
     Image tag, provide a pointer to a valid image file
