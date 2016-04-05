@@ -42,7 +42,7 @@ def _set_layout(layout,
                 parent_layout=None,
                 alignment=None,
                 stretch=10,
-                *args, **kwargs):
+                **kwargs):
     if widget is not None:
         if widget.layout() is None:
             widget.setLayout(layout)
@@ -55,7 +55,7 @@ def _set_layout(layout,
         parent_layout.setStretchFactor(layout, int(stretch))
     if alignment is not None:
         layout.setAlignment(getattr(Qt, alignment))
-    _set_object(layout, *args, **kwargs)
+    _set_object(layout, **kwargs)
     return layout
 
 def _set_widget(widget,
@@ -66,7 +66,7 @@ def _set_widget(widget,
                 alignment=None,
                 hstretch=10,
                 style=None,
-                *args, **kwargs):
+                **kwargs):
     if style is not None:
         widget.setStyleSheet("* {%s}" % style)
     if layout is not None:
@@ -88,7 +88,7 @@ def _set_widget(widget,
         widget.setMinimumSize(qsize)
         widget.setMaximumSize(qsize)
     widget.updateGeometry()
-    _set_object(widget, *args, **kwargs)
+    _set_object(widget, **kwargs)
 
 # Tag function, called for each _<tag> found
 
@@ -132,7 +132,6 @@ def _col(spacing=0,
          name=None,
          widget=None,
          layout=None,
-         *args,
          **kwargs):
     """
     Vertical layout, with some defaults better suited to printed output.
@@ -155,7 +154,6 @@ def _col(spacing=0,
                 margins=margins,
                 name=name,
                 parent_layout=layout,
-                *args,
                 **kwargs)
     return vlayout
 
@@ -165,7 +163,6 @@ def _row(spacing=0,
          name=None,
          widget=None,
          layout=None,
-         *args,
          **kwargs):
     """
     Horizontal layout, see _col for details
