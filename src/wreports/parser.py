@@ -24,12 +24,22 @@ except ImportError:
                              QColor, QApplication, QWidget, QLabel, QTextDocument, QFrame)
     from PyQt4.QtSvg import QSvgWidget
 
+from . import errors
 
 __all__ = ["parse"]
 
-# Helper functions to apply attributes to qwidgets
+def formatError(d):
+    error =""
+    for k,v in d.items():
+        error+=" %s=%s" % (k,v)
+    return error
 
-def _set_object(obj, parent=None, name=None, env=None):
+# Helper functions to apply attributes to qwidgets
+def _set_object(obj, line, parent=None, name=None, env=None, **kwargs):
+    if __debug__:
+        if kwargs:
+            error = formatError(kwargs)
+            raise errors.ParseError("unknown attributes%s at line %d in <%s>" % (error, line, name))
     if parent is not None:
         obj.setParent(parent)
     if name is not None:
@@ -122,9 +132,9 @@ def _section(spacing=0,
     try:
         _layout = layouts[child_layout]
     except KeyError:
-        msg = "Invalid value %r for `child_layout`, use %s"
-        raise ValueError(msg % (child_layout, "|".join(layouts.keys())))
-    _layout(spacing=spacing, margins=margins, name=col_name, widget=section)
+        msg = "Invalid value %r for `child_layout` at line %s, use %s"
+        raise errors.TagError(msg % (child_layout,  kwargs['line'], "|".join(layouts.keys())))
+    _layout(spacing=spacing, margins=margins, name=col_name, widget=section, **kwargs)
     return section
 
 
@@ -175,7 +185,6 @@ def _row(spacing=0,
                 margins=margins,
                 name=name,
                 parent_layout=layout,
-                *args,
                 **kwargs)
     return hlayout
 
@@ -332,14 +341,14 @@ def _vline(color="black",
 
 
 class AspectRatioSvgWidget(QSvgWidget):
-    def __init__(self, src, env, *args, **kwargs):
+    def __init__(self, src, env, line, *args, **kwargs):
         super(AspectRatioSvgWidget, self).__init__(*args, **kwargs)
         policy = self.sizePolicy()
         policy.setHeightForWidth(True)
         self.setSizePolicy(policy)
         if src.startswith("data://"):
             if env is None:
-                raise ValueError("Cannot use data:// without `env`")
+                raise errors.TagError("Cannot use data:// without `env`")
             multikey = src[len("data://"):]
             keys = multikey.split(":")
             # data://preview:ID -> env["preview"][ID]
@@ -348,12 +357,12 @@ class AspectRatioSvgWidget(QSvgWidget):
                 try:
                     data = data[key]
                 except KeyError as err:
-                    raise KeyError("%s: parsing %s" % (err, src))
+                    raise errors.ParseError("%s: parsing %s at line %s" % (err, src, line))
             self.load(QByteArray(data))
         else:
             self.load(src)
         if not self.renderer().isValid():
-            raise ValueError("Invalid svg in %s" % src)
+            raise errors.TagError("Invalid svg in src='%s' at line %s" % (src, line))
 
     def heightForWidth(self, w):
         return w
@@ -385,7 +394,7 @@ class AspectRatioSvgWidget(QSvgWidget):
         self.renderer().render(painter, new_rect)
 
 
-def _svg(src,
+def _svg(src="",
          widget=None,
          layout=None,
          horizontal="Preferred",
@@ -396,12 +405,11 @@ def _svg(src,
     Svg tag, provide a pointer to a valid svg file
     """
     try:
-        svg = AspectRatioSvgWidget(src, kwargs["env"])
-    except (KeyError, ValueError) as e:
-        print(type(e), e)
+        svg = AspectRatioSvgWidget(src, kwargs["env"], kwargs['line'])
+    except (errors.TagError, errors.ParseError) as e:
         error_svg = """
                     <svg>
-                    <rect width="100%" height="100%" fill='white' stroke="black" stroke-width="1"/>
+                    <rect width="100%" height="100%" fill='white' stroke="red" stroke-width="1"/>
                     <text fill="red" font-size="8" font-family="Verdana" x="30%" y="45%">
                     Error: Missing svg
                     </text>
@@ -439,7 +447,7 @@ def _image(src="",
         pixmap = pixmap.scaledToWidth(int(width))
     elif height is not None:
         pixmap = pixmap.scaledToHieght(int(height))
-    assert not pixmap.isNull(), "src:'%s' is of an unknown format" % (src)
+    assert not pixmap.isNull(), "src:'%s' is of an unknown format at line %s" % (src, kwargs['line'])
 
     image = QLabel()
     if pixmap.isNull():
@@ -459,43 +467,43 @@ def _image(src="",
 
 # Attributes parsers
 
-def _parse_spacing(value):
+def _parse_spacing(value, line):
     try:
         return float(value)
     except:
-        raise ValueError("Invalid value %r for `spacing`, provide a valid number" % value)
+        raise errors.ParseError("Invalid value %r for `spacing` at line %s, provide a valid number" % (value, line))
 
-def _parse_margins(value):
+def _parse_margins(value, line):
     try:
         return tuple(float(v.strip()) for v in value.strip("()").split(","))
     except:
-        raise ValueError("Invalid value %r for `margins`, provide 4 comma separated numbers, es. (3,3,4,4)" % value)
+        raise errors.ParseError("Invalid value %r for `margins` at line %s, provide 4 comma separated numbers, es. (3,3,4,4)" % (value, line))
 
-def _parse_size(value):
+def _parse_size(value, line):
     try:
         return tuple(float(v.strip()) for v in value.strip("()").split(","))
     except:
-        raise ValueError("Invalid value %r for `size`, provide 2 comma separated numbers, es. (300,400)" % value)
+        raise errors.ParseError("Invalid value %r for `size` at line %s, provide 2 comma separated numbers, es. (300,400)" % (value, line))
 
-def _parse_line_width(value):
+def _parse_line_width(value, line):
     try:
         return float(value.strip())
     except:
-        raise ValueError("Invalid value %r for `line_width`, provide a valid numbers" % value)
+        raise errors.ParseError("Invalid value %r for `line_width` at line %s, provide a valid numbers" % (value, line))
 
-def _parse_color(value):
+def _parse_color(value, line):
     try:
         return QColor(value)
     except:
-        raise ValueError("Invalid color %r, provide a valid QColor" % value)
+        raise errors.ParseError("Invalid color %r at line %s, provide a valid QColor" % (value, line))
 
-def _parse_src(value):
+def _parse_src(value, line):
     if __debug__:
         if not os.path.exists(value):
-            raise ValueError("'%s' does not exist" % value)
+            raise errors.ParseError("'%s' at line %s does not exist" % (value, line))
 
 if __debug__:
-    def _parse_src(value):
+    def _parse_src(value, line):
         if value.startswith("data://"):
             # postpone check, needs `env`
             # FIXME: spostare il check qua invece che in AspectRatioSvgWidget?
@@ -504,7 +512,7 @@ if __debug__:
         else:
             import os
             if not os.path.exists(value):
-                raise ValueError("File '%s' does not exist" % value)
+                raise errors.ParseError("File '%s' does not exist" % value)
         return value
 
 # Markdown helpers
@@ -554,9 +562,9 @@ def parse(source, env=None):
             for attr in kwargs:
                 if attr in parsers:
                     try:
-                        kwargs[attr] = parsers[attr](kwargs[attr])
+                        kwargs[attr] = parsers[attr](kwargs[attr], line=p.ErrorLineNumber)
                     except ValueError as v:
-                        raise ValueError("error parsing %s: %s" % (attr, v))
+                        raise errors.ParseError("error parsing %s: %s" % (attr, v))
 
             if widgets:
                 kwargs["widget"] = widgets[-1]
@@ -576,7 +584,7 @@ def parse(source, env=None):
             # print("%s %s %s)" % ("  "*len(tags), named_args, named_kwargs))
 
             # print("_%s(*%r, **%r)" % (tag, args, kwargs))
-            obj = hook(*args, **kwargs)
+            obj = hook(line=p.ErrorLineNumber, *args, **kwargs)
             if tag == "report":
                 pass
             elif tag in ("col", "row"):
