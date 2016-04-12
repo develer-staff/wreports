@@ -344,7 +344,6 @@ class AspectRatioSvgWidget(QSvgWidget):
     def __init__(self, src, env, line, *args, **kwargs):
         super(AspectRatioSvgWidget, self).__init__(*args, **kwargs)
         policy = self.sizePolicy()
-        policy.setHeightForWidth(True)
         self.setSizePolicy(policy)
         if src.startswith("data://"):
             if env is None:
@@ -364,8 +363,6 @@ class AspectRatioSvgWidget(QSvgWidget):
         if not self.renderer().isValid():
             raise errors.TagError("Invalid svg in src='%s' at line %s" % (src, line))
 
-    def heightForWidth(self, w):
-        return w
     def paintEvent(self, paint_event):
         painter = QPainter(self)
         view_box = self.renderer().viewBox()
