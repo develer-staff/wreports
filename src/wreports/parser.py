@@ -112,7 +112,10 @@ def _report(*args, **kwargs):
       ...
     </report>
     """
-    pass
+    try:
+       return kwargs["version"]
+    except KeyError:
+        raise errors.TagError("missing version number in <report>")
 
 
 def _section(spacing=0,
@@ -581,7 +584,7 @@ def parse(source, env=None):
             # print("_%s(*%r, **%r)" % (tag, args, kwargs))
             obj = hook(line=p.ErrorLineNumber, *args, **kwargs)
             if tag == "report":
-                pass
+                print("this template use version %s" % obj)
             elif tag in ("col", "row"):
                 layouts.append(obj)
             else:

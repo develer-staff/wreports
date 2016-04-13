@@ -52,7 +52,7 @@
             vertical (Minimum|Maximum|Preferred|MinimumExpanding|Expanding|Ignored) "Preferred"
             horizontal (Minimum|Maximum|Preferred|MinimumExpanding|Expanding|Ignored) "MinimumExpanding">
   ]>
-<report>
+<report version="1.2">
   <section name="section1">
     <row name="row_layout">
       <col name="image_layout">
