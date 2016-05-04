@@ -444,12 +444,12 @@ def _image(src="",
     Image tag, provide a pointer to a valid image file
     """
     pixmap = QPixmap(src)
-    if width is None and height is not None:
-        pixmap = pixmap.scaled(int(width), int(height))
+    if width is not None and height is not None:
+        pixmap = pixmap.scaled(int(width), int(height), transformMode=Qt.SmoothTransformation)
     elif width is not None:
-        pixmap = pixmap.scaledToWidth(int(width))
+        pixmap = pixmap.scaledToWidth(int(width), mode=Qt.SmoothTransformation)
     elif height is not None:
-        pixmap = pixmap.scaledToHieght(int(height))
+        pixmap = pixmap.scaledToHeight(int(height), mode=Qt.SmoothTransformation)
     assert not pixmap.isNull(), "src:'%s' is of an unknown format at line %s" % (src, kwargs['line'])
 
     image = QLabel()
