@@ -455,7 +455,10 @@ def _image(src="",
     image = QLabel()
     if pixmap.isNull():
         import os
-        image.setText(os.path.basename(src))
+        if os.path.exists(src):
+            image.setText(os.path.basename(src))
+        else:
+            image.setText("")
     else:
         image.setPixmap(pixmap)
     _set_widget(image,
