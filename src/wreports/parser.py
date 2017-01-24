@@ -450,7 +450,6 @@ def _image(src="",
         pixmap = pixmap.scaledToWidth(int(width), mode=Qt.SmoothTransformation)
     elif height is not None:
         pixmap = pixmap.scaledToHeight(int(height), mode=Qt.SmoothTransformation)
-    assert not pixmap.isNull(), "src:'%s' is of an unknown format at line %s" % (src, kwargs['line'])
 
     image = QLabel()
     if pixmap.isNull():
