@@ -409,7 +409,7 @@ def _svg(src="",
     """
     try:
         svg = AspectRatioSvgWidget(src, kwargs["env"], kwargs['line'])
-    except (errors.TagError, errors.ParseError) as e:
+    except (errors.TagError, errors.ParseError):
         error_svg = """
                     <svg>
                     <rect width="100%" height="100%" fill='white' stroke="red" stroke-width="1"/>
@@ -670,7 +670,6 @@ def demo(template):
 
 
 if __name__ == '__main__':
-    import os
     import sys
     if sys.argv[1:] and os.path.exists(sys.argv[1]):
         template = sys.argv[1]
