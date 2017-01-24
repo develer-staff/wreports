@@ -1,7 +1,7 @@
 from setuptools import setup, find_packages
 
 setup(name='wreports',
-      version='1.0.0-pre',
+      version='1.2.2',
       author='Matteo Bertini <naufraghi@develer.com>',
       description='Fixed page report generator',
       long_description=open('README.rst').read(),
