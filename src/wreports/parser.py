@@ -517,15 +517,22 @@ if __debug__:
 
 # Markdown helpers
 
-class EvenOddRendered(mistune.Renderer):
+class QTextEditRenderer(mistune.Renderer):
+    """
+    QTextEdit targetted renderer with:
+
+    - full width tables
+    - odd / even rows
+    - use cell `align` attribute instead of `style`
+    """
     def __init__(self, *args, **kwargs):
-        super(EvenOddRendered, self).__init__(*args, **kwargs)
+        super(QTextEditRenderer, self).__init__(*args, **kwargs)
         self._even_odd = False
     def table(self, header, body):
-        out = super(EvenOddRendered, self).table(header, body)
+        out = super(QTextEditRenderer, self).table(header, body)
         return out.replace("<table>", '<table width="100%">', 1)
     def table_row(self, content):
-        out = super(EvenOddRendered, self).table_row(content)
+        out = super(QTextEditRenderer, self).table_row(content)
         if content.strip().startswith("<th>"):
             cls = 'class="header"'
         else:
@@ -533,6 +540,15 @@ class EvenOddRendered(mistune.Renderer):
             self._even_odd = not self._even_odd
         out = out.replace("<tr>", "<tr %s>" % cls, 1)
         return out
+    def table_cell(self, content, **flags):
+        if flags['header']:
+            tag = 'th'
+        else:
+            tag = 'td'
+        align = flags['align']
+        if not align:
+            return '<%s>%s</%s>\n' % (tag, content, tag)
+        return '<%s align="%s">%s</%s>\n' % (tag, align, content, tag)
 
 # Entrypoint
 
@@ -612,7 +628,7 @@ def parse(source, env=None):
                     bbcode.g_parser = bbcode.Parser(newline='\n', replace_cosmetic=False)
                     text = bbcode.render_html(text)
                     code = textwrap.dedent(text).strip()
-                    html = mistune.Markdown(EvenOddRendered())(code)
+                    html = mistune.Markdown(QTextEditRenderer())(code)
                     widget.setHtml(html)
             buffers["text"] = []
         elif tag == "label":
