@@ -622,12 +622,11 @@ def parse(source, env=None):
             if buffers["text"]:
                 widget = widgets[-1] if widgets else None
                 if isinstance(widget, TextViewer):
-                    text = "".join(buffers["text"])
+                    text = textwrap.dedent("".join(buffers["text"])).strip()
                     # default bbcode parser change \n with <br> we force it to \n to avoid changes
                     # 'raplace_cosmetic' change symbols into ascii code for html and we don't want that too
                     bbcode.g_parser = bbcode.Parser(newline='\n', replace_cosmetic=False)
-                    text = bbcode.render_html(text)
-                    code = textwrap.dedent(text).strip()
+                    code = bbcode.render_html(text)
                     html = mistune.Markdown(QTextEditRenderer())(code)
                     widget.setHtml(html)
             buffers["text"] = []
