@@ -248,7 +248,7 @@ class TextViewer(QWidget):
         """).strip()
         # make room for the "header" widgets
         css = css % {"margin": self._offset_top()}
-        print("css = %s" % css)
+        # print("css = %s" % css)
         html = '%s\n<div class="markdown">%s<span>' % (css, self._html)
         # print("setHtml <- %s" % html)
         self._document.setDefaultFont(self.font())
