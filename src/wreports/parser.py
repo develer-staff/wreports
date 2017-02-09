@@ -45,6 +45,7 @@ def _set_object(obj, line, parent=None, name=None, env=None, **kwargs):
     if name is not None:
         obj.setObjectName(name)
 
+
 def _set_layout(layout,
                 widget=None,
                 spacing=None,
@@ -67,6 +68,7 @@ def _set_layout(layout,
         layout.setAlignment(getattr(Qt, alignment))
     _set_object(layout, **kwargs)
     return layout
+
 
 def _set_widget(widget,
                 layout=None,
@@ -96,12 +98,14 @@ def _set_widget(widget,
         widget.setSizePolicy(policy)
     if size is not None:
         qsize = QSize(*size)
-        print("Setting sizeHint to %s" % qsize)
+        if __debug__:
+            print("Setting sizeHint to %s" % qsize)
         widget.sizeHint = lambda: qsize
         widget.setMinimumSize(qsize)
         widget.setMaximumSize(qsize)
     widget.updateGeometry()
     _set_object(widget, **kwargs)
+
 
 # Tag function, called for each _<tag> found
 
@@ -279,6 +283,7 @@ class TextViewer(QWidget):
         self.update()
     def pageNumber(self):
         return self._page_number
+
 
 def _text(widget=None,
           layout=None,
@@ -602,7 +607,8 @@ def parse(source, env=None):
             # print("_%s(*%r, **%r)" % (tag, args, kwargs))
             obj = hook(line=p.ErrorLineNumber, *args, **kwargs)
             if tag == "report":
-                print("this template use version %s" % obj)
+                if __debug__:
+                    print("this template use version %s" % obj)
             elif tag in ("col", "row"):
                 layouts.append(obj)
             else:
@@ -653,7 +659,7 @@ def parse(source, env=None):
 
     def char_data(data):
         tag = tags[-1] if tags else None
-        if tag in ("label", "text"):
+        if tag in buffers:
             buffers[tag] += [data]
 
     p.StartElementHandler = start_element
@@ -668,7 +674,6 @@ def parse(source, env=None):
 # Command line
 
 def demo(template):
-    import os
     from os.path import dirname, basename
 
     app = QApplication([])
@@ -686,7 +691,7 @@ def demo(template):
 if __name__ == '__main__':
     import sys
     if sys.argv[1:] and os.path.exists(sys.argv[1]):
-        template = sys.argv[1]
+        template = os.path.abspath(sys.argv[1])
         print("Parsing template %s" % template)
         demo(template)
     else:
