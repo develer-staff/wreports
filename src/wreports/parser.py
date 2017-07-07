@@ -623,16 +623,18 @@ def parse(source, env=None):
         # print("%s<%s>" % ("  "*len(tags), tag))
         x(tag)(**attrs)
 
+    # default bbcode parser change \n with <br> we force it to \n to avoid changes
+    # 'replace_cosmetic' change symbols into ascii code for html and we don't want that too
+    bbcode_parser = bbcode.Parser(newline='\n', replace_cosmetic=False)
+    parser.add_simple_formatter('center', '<center>%(value)s</center>')
+
     def end_element(tag):
         if tag == "text":
             if buffers["text"]:
                 widget = widgets[-1] if widgets else None
                 if isinstance(widget, TextViewer):
                     text = textwrap.dedent("".join(buffers["text"])).strip()
-                    # default bbcode parser change \n with <br> we force it to \n to avoid changes
-                    # 'raplace_cosmetic' change symbols into ascii code for html and we don't want that too
-                    bbcode.g_parser = bbcode.Parser(newline='\n', replace_cosmetic=False)
-                    code = bbcode.render_html(text)
+                    code = bbcode_parser.render_html(text)
                     html = mistune.Markdown(QTextEditRenderer())(code)
                     widget.setHtml(html)
             buffers["text"] = []
