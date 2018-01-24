@@ -15,24 +15,27 @@ try:
     from PyQt5.QtCore import (QSize, QSizeF, QByteArray, QRectF)
     from PyQt5.QtGui import (QPixmap, QPainter, QColor, QTextDocument)
     from PyQt5.QtWidgets import (QVBoxLayout, QHBoxLayout, QWidget, QLabel, QFrame,
-                             QSizePolicy, QApplication)
+                                 QSizePolicy, QApplication, QGridLayout)
     from PyQt5.QtSvg import QSvgWidget
 except ImportError:
     from PyQt4.Qt import Qt
     from PyQt4.QtCore import (QSize, QSizeF, QByteArray, QRectF)
     from PyQt4.QtGui import (QVBoxLayout, QHBoxLayout, QSizePolicy, QPixmap, QPainter,
-                             QColor, QApplication, QWidget, QLabel, QTextDocument, QFrame)
+                             QColor, QApplication, QWidget, QLabel, QTextDocument, QFrame,
+                             QGridLayout)
     from PyQt4.QtSvg import QSvgWidget
 
 from . import errors
 
 __all__ = ["parse"]
 
+
 def formatError(d):
-    error =""
-    for k,v in d.items():
-        error+=" %s=%s" % (k,v)
+    error = ""
+    for k, v in d.items():
+        error += " %s=%s" % (k, v)
     return error
+
 
 # Helper functions to apply attributes to qwidgets
 def _set_object(obj, line, parent=None, name=None, env=None, **kwargs):
@@ -123,12 +126,12 @@ def _report(*args, **kwargs):
 
 
 def _section(spacing=0,
-          margins=(0,0,0,0),
-          name=None,
-          child_layout="col",
-          style="font-size: 10pt",
-          metadata=None,
-          **kwargs):
+             margins=(0,0,0,0),
+             name=None,
+             child_layout="col",
+             style="font-size: 10pt",
+             metadata=None,
+             **kwargs):
     """
     Section is a container of contents of the same context, a section contains
     a default layout (see special handling in `parse` function).
@@ -146,6 +149,79 @@ def _section(spacing=0,
         raise errors.TagError(msg % (child_layout,  kwargs['line'], "|".join(layouts.keys())))
     _layout(spacing=spacing, margins=margins, name=col_name, widget=section, **kwargs)
     return section
+
+
+class TableLayout(QGridLayout):
+      def __init__(self, *args, **kwargs):
+            self._current_row = 0
+            self._current_col = 0
+            self._used = set()
+            super(TableLayout, self).__init__(*args, **kwargs)
+      def td(self, rowspan=1, colspan=1):
+            # skip to the first free column
+            while (self._current_row, self._current_col) in self._used:
+                  self._used.remove((self._current_row, self._current_col))
+                  self._current_col += 1
+            layout = QVBoxLayout()
+            layout.setContentsMargins(0,0,0,0)
+            layout.setSpacing(0)
+            # add the layout in the current slot
+            self.addLayout(layout,
+                           self._current_row, self._current_col,
+                           rowspan, colspan)
+            # mark all the given span as occupied
+            for row in range(self._current_row, self._current_row + rowspan):
+                  for col in range(self._current_col, self._current_col + colspan):
+                        self._used.add((row, col))
+            return layout
+      def tr(self):
+            self._current_col = 0
+            self._current_row += 1
+
+
+def _table(spacing=0,
+           margins=(0,0,0,0),
+           name="table",
+           widget=None,
+           layout=None,
+           **kwargs):
+    """
+    Grid layout, with some defaults better suited to printed output.
+    <table>
+      <tr>
+        <td><label>1</label></td>
+        <td rowspan="2"><label>2+3</label></td>
+      </tr>
+      <tr>
+        <td><label>1</label></td>
+        <td><label>2</label></td>
+        <td><label>3</label></td>
+      </tr>
+    </table>
+    """
+    table_layout = TableLayout()
+    _set_layout(table_layout,
+                widget=widget,
+                spacing=spacing,
+                margins=margins,
+                name=name,
+                parent_layout=layout,
+                **kwargs)
+    return table_layout
+
+def _tr(layout=None,
+        **kwargs):
+    if not isinstance(layout, TableLayout):
+        raise ParseError("<tr> tag must be nested in a <table> tag")
+    layout.tr()
+
+def _td(rowspan=1,
+        colspan=1,
+        layout=None,
+        **kwargs):
+    if not isinstance(layout, TableLayout):
+        raise ParseError("<td> tag must be nested in a <table> tag")
+    return layout.td(rowspan=rowspan, colspan=colspan)
 
 
 def _col(spacing=0,
@@ -210,7 +286,7 @@ def _label(widget=None,
     Single line text in the layout
     """
     label = QLabel()
-    word_wrap = word_wrap == "True"
+    word_wrap = (word_wrap == "True")
     label.setWordWrap(word_wrap)
     _set_widget(label,
                 layout=layout,
@@ -477,6 +553,18 @@ def _image(src="",
 
 # Attributes parsers
 
+def _parse_colspan(value, line):
+    try:
+        return int(value)
+    except:
+        raise errors.ParseError("Invalid value %r for `colspan` at line %s, provide a valid integer" % (value, line))
+
+def _parse_rowspan(value, line):
+    try:
+        return int(value)
+    except:
+        raise errors.ParseError("Invalid value %r for `rowspan` at line %s, provide a valid integer" % (value, line))
+
 def _parse_spacing(value, line):
     try:
         return float(value)
@@ -519,6 +607,13 @@ if __debug__:
             if not os.path.exists(value):
                 print("'%s' at line %s does not exist" % (value, line))
         return value
+
+# polulate attribute parser map
+parsers = {}
+for parser_name in tuple(globals()):
+    if parser_name.startswith("_parse_"):
+        attr = parser_name[len("_parse_"):]
+        parsers[attr] = globals()[parser_name]
 
 # Markdown helpers
 
@@ -570,12 +665,6 @@ def parse(source, env=None):
     pages = []
     buffers = {"text": [], "label": []}
 
-    parsers = {}
-    for parser_name in globals():
-        if parser_name.startswith("_parse_"):
-            attr = parser_name[len("_parse_"):]
-            parsers[attr] = globals()[parser_name]
-
     def x(tag):
         hook = globals()["_"+tag]
         def f(*args, **kwargs):
@@ -609,7 +698,9 @@ def parse(source, env=None):
             if tag == "report":
                 if __debug__:
                     print("this template use version %s" % obj)
-            elif tag in ("col", "row"):
+            elif tag == "tr":
+                pass  # we are modifying the parent layout
+            elif tag in ("col", "row", "table", "td"):
                 layouts.append(obj)
             else:
                 if tag == "section":
@@ -647,7 +738,9 @@ def parse(source, env=None):
 
         if tag == "report":
             pass
-        elif tag in ("col", "row"):
+        elif tag == "tr":
+            pass
+        elif tag in ("col", "row", "table", "td"):
             layouts.pop()
         else:
             if tag == "section":
