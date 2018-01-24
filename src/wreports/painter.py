@@ -8,7 +8,7 @@ try:
     from PyQt5.QtGui import QPicture, QPainter
     from PyQt5.QtPrintSupport import QPrinter, QPrintDialog, QPrintPreviewDialog
     from PyQt5.QtCore import QTimer
-    from PyQt5.QtWidgets import QWidget
+    from PyQt5.QtWidgets import QWidget, QApplication, QDialog
 except ImportError:
     from PyQt4.Qt import *
 
@@ -63,7 +63,7 @@ def paint_pages(printer, pages, unit=QPrinter.DevicePixel):
 def demo(template, preview=True):
     import os
     from os.path import dirname, basename
-    import parser
+    from . import parser
     app = QApplication([])
 
     print("Setup printer...")
