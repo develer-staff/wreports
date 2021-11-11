@@ -3,7 +3,7 @@
 from __future__ import print_function, absolute_import, division
 
 import xml.parsers.expat
-import types
+import sys
 import os
 import textwrap
 
@@ -25,6 +25,12 @@ except ImportError:
     from PyQt4.QtSvg import QSvgWidget
 
 from . import errors
+
+PY3 = sys.version_info.major == 3
+if PY3:
+    string_types = (str, bytes)
+else:
+    from types import StringTypes as string_types
 
 __all__ = ["parse"]
 
@@ -559,7 +565,7 @@ class QTextEditRenderer(mistune.Renderer):
 
 def parse(source, env=None):
     p = xml.parsers.expat.ParserCreate()
-    if isinstance(source, types.StringTypes):
+    if isinstance(source, string_types):
         _parse = p.Parse
     else:
         _parse = p.ParseFile

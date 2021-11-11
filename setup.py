@@ -1,9 +1,9 @@
 from setuptools import setup, find_packages
 
 setup(name='wreports',
-      version='1.2.3',
+      version='1.2.4',
       author='Matteo Bertini <naufraghi@develer.com>',
-      description='Fixed page report generator',
+      description='Introduced Python3 support',
       long_description=open('README.rst').read(),
       license='LICENSE.txt',
       keywords="qt, report",
