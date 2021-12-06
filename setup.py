@@ -1,7 +1,7 @@
 from setuptools import setup, find_packages
 
 setup(name='wreports',
-      version='1.2.4',
+      version='1.2.5',
       author='Matteo Bertini <naufraghi@develer.com>',
       description='Introduced Python3 support',
       long_description=open('README.rst').read(),
@@ -9,8 +9,8 @@ setup(name='wreports',
       keywords="qt, report",
 
       # dependencies
-      install_requires=['mistune',
-                        'bbcode'],
+      install_requires=['mistune==0.8.4',
+                        'bbcode==1.1.0'],
 
       # package source directory
       package_dir={'': 'src'},
