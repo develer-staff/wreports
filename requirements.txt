@@ -1,4 +1,4 @@
 
 # markdown support
-mistune
-bbcode
+mistune==0.8.4
+bbcode==1.1.0
