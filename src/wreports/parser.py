@@ -412,7 +412,7 @@ def _svg(src="",
          widget=None,
          layout=None,
          horizontal="Preferred",
-         vertical="MinimumExpanding",
+         vertical="Preferred",
          name="svg",
          **kwargs):
     """
