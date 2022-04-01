@@ -421,7 +421,7 @@ def _svg(src="",
     try:
         svg = AspectRatioSvgWidget(src, kwargs["env"], kwargs['line'])
     except (errors.TagError, errors.ParseError):
-        error_svg = """
+        error_svg = b"""
                     <svg>
                     <rect width="100%" height="100%" fill='white' stroke="red" stroke-width="1"/>
                     <text fill="red" font-size="8" font-family="Verdana" x="30%" y="45%">
