@@ -485,25 +485,25 @@ def _image(src="",
 
 def _parse_spacing(value, line):
     try:
-        return float(value)
+        return int(value)
     except:
         raise errors.ParseError("Invalid value %r for `spacing` at line %s, provide a valid number" % (value, line))
 
 def _parse_margins(value, line):
     try:
-        return tuple(float(v.strip()) for v in value.strip("()").split(","))
+        return tuple(int(v.strip()) for v in value.strip("()").split(","))
     except:
         raise errors.ParseError("Invalid value %r for `margins` at line %s, provide 4 comma separated numbers, es. (3,3,4,4)" % (value, line))
 
 def _parse_size(value, line):
     try:
-        return tuple(float(v.strip()) for v in value.strip("()").split(","))
+        return tuple(int(v.strip()) for v in value.strip("()").split(","))
     except:
         raise errors.ParseError("Invalid value %r for `size` at line %s, provide 2 comma separated numbers, es. (300,400)" % (value, line))
 
 def _parse_line_width(value, line):
     try:
-        return float(value.strip())
+        return int(value.strip())
     except:
         raise errors.ParseError("Invalid value %r for `line_width` at line %s, provide a valid numbers" % (value, line))
 
