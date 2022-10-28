@@ -316,6 +316,7 @@ def _hline(color="black",
            layout=None,
            line_width=1,
            name="hline",
+           horizontal="Minimum",
            **kwargs):
     """
     Horizontal line
@@ -327,7 +328,7 @@ def _hline(color="black",
     _set_widget(line,
                 layout=layout,
                 parent=widget,
-                horizontal="Minimum",
+                horizontal=horizontal,
                 vertical="Fixed",
                 name=name,
                 **kwargs)
@@ -339,6 +340,7 @@ def _vline(color="black",
            layout=None,
            line_width=1,
            name="vline",
+           vertical="Minimum",
            **kwargs):
     """
     Vertical line
@@ -351,7 +353,7 @@ def _vline(color="black",
                 layout=layout,
                 parent=widget,
                 horizontal="Fixed",
-                vertical="Minimum",
+                vertical=vertical,
                 name=name,
                 **kwargs)
     return line
